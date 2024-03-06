@@ -1,0 +1,9 @@
+Host drs-server
+    HostName drs-server
+    IdentityFile ~/.ssh/id_rsa
+    IdentitiesOnly yes
+    User drs
+    Port 22
+    ForwardX11 no
+    Compression no
+    Ciphers ^aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,chacha20-poly1305@openssh.com,aes128-ctr

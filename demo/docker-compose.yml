@@ -1,0 +1,12 @@
+version:             '3'
+services:
+  drs-server:
+    image:           balazsvarnai/drs-demo-server:latest
+    restart:         unless-stopped
+    container_name:  drs-server
+  drs-client:
+    image:           balazsvarnai/drs-demo-client:latest
+    restart:         "no"
+    container_name:  drs-client
+    depends_on:
+      - drs-server

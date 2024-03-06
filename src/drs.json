@@ -1,0 +1,12 @@
+{
+    "name": "myproject",
+    "defaultBranch": "master",
+    "remote": {
+        "host": "rds",
+        "directory": "/var/storage/rds",
+        "rsyncOptions": {
+            "get":"-az --delete-during --checksum",
+            "put":"-az --delete-during --whole-file"
+        }
+    }
+}
