@@ -33,7 +33,7 @@ RUN chmod 700 ~/.ssh && chmod 600 ~/.ssh/id_rsa
 RUN ssh-keyscan github.com >> ~/.ssh/known_hosts
 
 # get drs sources
-RUN git clone git@github.com:bvarnai/drs.git
+RUN git clone https://github.com/bvarnai/drs.git
 RUN echo "export DRS_HOME=~/drs/src" >> ~/.bashrc
 
 # sample git setup (to ensure no Git error messages)
