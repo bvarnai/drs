@@ -74,7 +74,7 @@ For a complete dockerized example see [drs demo](https://github.com/bvarnai/drs/
 ### Using releases
   1. Download `drs.tar.gz` from the [latest release](https://github.com/bvarnai/drs/releases/latest)
 ```bash
-curl -o drs.tar.gz https://github.com/bvarnai/drs/releases/latest/download/drs.tar.gz
+curl -o drs.tar.gz -L https://github.com/bvarnai/drs/releases/latest/download/drs.tar.gz
 ```
   3. Extract archive (to a directory of your choosing)
 ```bash
