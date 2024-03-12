@@ -193,6 +193,8 @@ Host drs-server
 ```
 :memo: Note SSH configuration is an extensive topic, endless options to choose from. You can find out more about option here [How to Use The SSH Config File](https://phoenixnap.com/kb/ssh-config)
 
+:bulb: If you are working in secure, trusted environment, for example a company intranet you can use a shared user for `drs`. It greatly simplifies client setup.
+
 #### SSH server setup
 
 If you don't have an SSH server, please follow the guide [Initial Server Setup](https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-22-04)
