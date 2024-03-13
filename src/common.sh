@@ -2,7 +2,7 @@
 
 # Constants
 # shellcheck disable=SC2034
-declare -r DRS_VERSION="1.0.0"
+declare -r DRS_VERSION="1.0.1"
 declare -r DRS_DOC_URL="https://github.com/bvarnai/drs?tab=readme-ov-file"
 declare -r DRS_LOG_PREFIX='[drs]'
 # shellcheck disable=SC2034

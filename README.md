@@ -10,7 +10,7 @@ I needed to store large builds (>5GB) and distribute them efficiently to testers
 
 **Relation to Git**
 
-`drs` uses Git as a minimalistic database. Commands like `drs-put`, `drs-get` are integrated as Git aliases and organized around producer/customer concept. Producer is usually a build job on CI, the consumer can be a human tester or a regression test job for example. Most workflow tasks (except `git init`) are covered with `drs` commands, therefore users don't have to know Git much. For more details see [Differences to Git](#differences-to-git)
+`drs` uses Git as a minimalistic database. Commands like `drs-put`, `drs-get` are integrated as Git aliases and organized around producer/customer concept. Producer is usually a build job on CI, the consumer can be a human tester or a regression test job for example. Most workflow tasks (except `git init, tag`) are covered with `drs` commands, therefore users don't have to know Git much. For more details see [Differences to Git](#differences-to-git)
 
 ## Table of contents
 
@@ -450,12 +450,12 @@ git drs-name
 To select and switch to an existing branch use `select`:
 
 ```bash
-git drs-select [<branch>|<uuid>]
+git drs-select [<branch>|<tag>|<uuid>]
 ```
 
 Arguments:
 
-- `branch` - the branch to select, if not specified the `defaultBranch` property will be used (optional)
+- `branch, tag` - the branch, tag to select, if not specified the `defaultBranch` property will be used (optional)
 - `uuid` - the uuid to select, alternatively this searches the log for a specific uuid (optional)
 
 :memo: `uuid` based selection is useful is to identify builds for example, Jenkins can post the `uuid` for each build and users can use this directly
@@ -470,6 +470,8 @@ To get to the latest revision use `update`:
 ```bash
 git drs-update
 ```
+
+:memo: If you are in detached HEAD state (not on any branch), `update` will fail. You need to select a branch than update it
 
 ---
 #### get
