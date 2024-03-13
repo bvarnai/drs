@@ -85,6 +85,8 @@ tar -zxvf drs.tar.gz
 export DRS_HOME=~/drs
  ```
 
+:memo: You can set `DRS_HOME` in `~/.profile` or `~/.bashrc` to make it permanent
+
 ### Install prerequisites
 #### Install *client* prerequisites on Ubuntu
 ```bash
