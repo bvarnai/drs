@@ -51,6 +51,7 @@ I needed to store large builds (>5GB) and distribute them efficiently to testers
   - [Differences to Git](#differences-to-git)
   - [Retention](#retention)
   - [Development notes](#development-notes)
+    - [Shell vs. python, groovy etc.](#shell-vs-python-groovy-etc)
 
 ---
 
@@ -565,4 +566,20 @@ workflow and will not be treated as error. To implement a simple retention polic
 
 ## Development notes
 
-I followed Google's [Shell Style Guide](https://google.github.io/styleguide/shellguide.html) with the help of [ShellCheck](https://www.shellcheck.net/)
+Git was a convenient choice to make something distributed and transactional. Directory metadata is published as a Git commit message in `json` format. :cold_sweat: ugh, you might say, and you are probably right. I abused the commit message, but in a good way, embracing the tremendous flexibility Git offers. I didn't use Git notes because I don't have anything to annotate, I just want to record something.
+
+So a typical *drs* commit message looks like this:
+
+```json
+{"uuid":"c1ca82b1-7f34-4f4c-9a76-05e3297b2a23","seq":"1622824489"}
+```
+
+The `uuid` is used to identify the directory on the remote host. The sequence number helps to drop outdated builds.
+
+rsync is a great tool when your have a small deltas to deal with. Initially I wanted to use a "trendy" S3 ([minIO](https://min.io/) for example) based solution, but I realized not much is gained there. I think for a small development team, these are just adding an unnecessary overhead.
+
+### Shell vs. python, groovy etc.
+
+Obviously this is very subjective topic. I wanted to rely on external tools and keep it simple as possible. No advanced logic and the seamless integration with Git aliases pushed me in the direction to use shell only.
+
+I used Google's [Shell Style Guide](https://google.github.io/styleguide/shellguide.html) with the help of [ShellCheck](https://www.shellcheck.net/)
