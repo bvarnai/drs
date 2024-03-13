@@ -24,6 +24,7 @@ function main()
     exit 1
   fi
 
+  # update to latest
   local branch
   branch=$(git rev-parse --abbrev-ref HEAD)
 
