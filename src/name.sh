@@ -21,7 +21,7 @@ function main()
   branch=$(git rev-parse --abbrev-ref HEAD)
 
   if [[ "$branch" = "HEAD" ]]; then
-    echo "no branch (detached HEAD state)"
+    echo "No branch (detached HEAD state)"
   else
     echo "$branch"
   fi
