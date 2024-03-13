@@ -59,7 +59,9 @@ I needed to store large builds (>5GB) and distribute them efficiently to testers
 
 ![drs demo](docs/demo.gif)
 
-For a complete dockerized example see [drs demo](https://github.com/bvarnai/drs/tree/main/demo)
+:tada: For a complete dockerized example see [drs demo](demo)
+
+It's fully functional, you can play with `put` and `get` commands.
 
 ---
 
