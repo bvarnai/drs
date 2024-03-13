@@ -10,7 +10,7 @@ I needed to store large builds (>5GB) and distribute them efficiently to testers
 
 **Relation to Git**
 
-`drs` uses Git as a minimalistic database. Commands like `drs-put`, `drs-get` are integrated as Git aliases and organized around producer/customer concept. Producer is usually a build job on CI, the consumer can be a human tester or a regression test job for example. Most workflow tasks (except `git init`) are covered with `drs` commands, therefore users don't have to know Git much. For more details see [Differences to Git](#differences-to-git)
+`drs` uses Git as a minimalistic database. Commands like `drs-put`, `drs-get` are integrated as Git aliases and organized around producer/customer concept. Producer is usually a build job on CI, the consumer can be a human tester or a regression test job for example. Most workflow tasks (except `git init, tag`) are covered with `drs` commands, therefore users don't have to know Git much. For more details see [Differences to Git](#differences-to-git)
 
 ## Table of contents
 
