@@ -12,6 +12,7 @@ function main()
 {
   # preconditions
   drs::common::precondition_configuration
+  drs::common::precondition_detached
   drs::common::check_remote_refs
 
   # process arguments
@@ -26,12 +27,9 @@ function main()
   local branch
   branch=$(git rev-parse --abbrev-ref HEAD)
 
-  if [[ "$branch" != "HEAD" ]]; then
-    # update to latest
-    if ! git reset --hard "origin/${branch}"; then
-      drs::common::err "Reset failed (gitish: 'git reset --hard')"
-      exit 1
-    fi
+  if ! git reset --hard "origin/${branch}"; then
+    drs::common::err "Reset failed (gitish: 'git reset --hard')"
+    exit 1
   fi
 
 }
