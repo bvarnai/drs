@@ -471,7 +471,7 @@ To get to the latest revision use `update`:
 git drs-update
 ```
 
-If you are in detached HEAD state (not on any branch), `update` not do nothing silently.
+:memo: If you are in detached HEAD state (not on any branch), `update` will fail. You need to select a branch than update it
 
 ---
 #### get
