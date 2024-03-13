@@ -17,7 +17,15 @@ function main()
   drs::common::no_args "$@"
 
   # diplay branch name
-  git rev-parse --abbrev-ref HEAD
+  local branch
+  branch=$(git rev-parse --abbrev-ref HEAD)
+
+  if [[ "$branch" = "HEAD" ]]; then
+    echo "no branch (detached HEAD state)"
+  else
+    echo "$branch"
+  fi
+
 }
 
 main "$@"

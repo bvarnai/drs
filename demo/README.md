@@ -21,7 +21,6 @@ Networking is private to these containers. For demonstration purposes only.
     ssh drs-server
     ```
 
-
 ## Use
 
 1. Clone and setup `drs` repository

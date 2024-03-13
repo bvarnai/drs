@@ -100,6 +100,11 @@ function main()
   local branch
   branch=$(git rev-parse --abbrev-ref HEAD)
 
+  if [[ "$branch" = "HEAD" ]]; then
+    drs::common::err "Cannot put in detached HEAD state, please select branch first"
+    exit 1
+  fi
+
   # adding changes
   drs::common::log "Adding changes to directory revision metadata"
   if ! git add  --all; then

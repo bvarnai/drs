@@ -23,12 +23,17 @@ function main()
     exit 1
   fi
 
-  # update to latest
+  local branch
   branch=$(git rev-parse --abbrev-ref HEAD)
-  if ! git reset --hard "origin/${branch}"; then
-    drs::common::err "Reset failed (gitish: 'git reset --hard')"
-    exit 1
+
+  if [[ "$branch" != "HEAD" ]]; then
+    # update to latest
+    if ! git reset --hard "origin/${branch}"; then
+      drs::common::err "Reset failed (gitish: 'git reset --hard')"
+      exit 1
+    fi
   fi
+
 }
 
 main "$@"

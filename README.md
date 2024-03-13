@@ -450,12 +450,12 @@ git drs-name
 To select and switch to an existing branch use `select`:
 
 ```bash
-git drs-select [<branch>|<uuid>]
+git drs-select [<branch>|<tag>|<uuid>]
 ```
 
 Arguments:
 
-- `branch` - the branch to select, if not specified the `defaultBranch` property will be used (optional)
+- `branch, tag` - the branch, tag to select, if not specified the `defaultBranch` property will be used (optional)
 - `uuid` - the uuid to select, alternatively this searches the log for a specific uuid (optional)
 
 :memo: `uuid` based selection is useful is to identify builds for example, Jenkins can post the `uuid` for each build and users can use this directly
@@ -470,6 +470,8 @@ To get to the latest revision use `update`:
 ```bash
 git drs-update
 ```
+
+If you are in detached HEAD state (not on any branch), `update` not do nothing silently.
 
 ---
 #### get
