@@ -489,7 +489,7 @@ git drs-update
 To get the directory revision specified by the current commit. The working directory content will be synchronized with this revision.
 
 ```bash
-git drs-get [-v,--verbose] [-q,--quiet] [--stats] [<target_directory>]
+git drs-get [-v,--verbose] [-q,--quiet] [--stats] [--latest] [<target_directory>]
 ```
 
 Options:
@@ -497,10 +497,17 @@ Options:
 - `verbose` - sets *rsync* verbose mode (optional)
 - `quite` - sets *rsync* quiet mode (optional)
 - `stats` - enables *rsync* statistics (optional)
+- `latest` - combines `update` and `get` to get the latest version
 
 Arguments:
 
 - `target_directory` – the directory to get content to, if not specified set the `name` property will be used (optional)
+
+:bulb: Usually you are only interested in the latest version, this can be done with a one-liner:
+
+```bash
+git drs-get --latest
+```
 
 ---
 #### create
@@ -521,7 +528,7 @@ Arguments:
 To put revision to remote host use `put`:
 
 ```bash
-git drs-put [-v,--verbose] [-s,--sequence <sequence_number>] [<source_directory>]
+git drs-put [-v,--verbose] [--no-sequence-check] [-s,--sequence <sequence_number>] [<source_directory>]
 ```
 
 Options:
@@ -529,6 +536,7 @@ Options:
 - `verbose` - sets *rsync* verbose mode (optional)
 - `quite` - sets *rsync* quiet mode (optional)
 - `stats` - enables *rsync* statistics (optional)
+- `no-sequence-check` - disables sequence number checking
 - `sequence_number` - the sequence number, must be a comparable decimal (optional)
 
 Arguments:
