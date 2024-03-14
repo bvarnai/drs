@@ -6,11 +6,11 @@ It's really easy to setup, depends on only standard tools and easy to extend.
 
 **Where does it fit?**
 
-I needed to store large builds (>5GB) and distribute them efficiently to testers. The actual differences between builds were quite small, a few changed jars along with 100s of other jars that rarely changing. In such case, rsync does a spectacular jobs to speed things up. Git is great to keep track of everything else, branches, build information etc.
+I needed to store large builds (>5GB) and distribute them efficiently to testers. The actual differences between builds were quite small, a few changed jars along with 100s of other jars that rarely changing. In such case, rsync does a spectacular jobs to speed things up. *Git* is great to keep track of everything else, branches, build information etc.
 
 **Relation to Git**
 
-`drs` uses *Git* as a minimalistic database. Commands like `drs-put`, `drs-get` are integrated as *Git* aliases and organized around producer/customer concept. Producer is usually a build job on CI, the consumer can be a human tester or a regression test job for example. Most workflow tasks (except `git init, tag`) are covered with `drs` commands, therefore users don't have to know Git much. For more details see [Differences to *Git*](#differences-to-*Git*)
+**drs** uses *Git* as a minimalistic database. Commands like `drs-put`, `drs-get` are integrated as *Git* aliases and organized around producer/customer concept. Producer is usually a build job on CI, the consumer can be a human tester or a regression test job for example. Most workflow tasks (except `git init, tag`) are covered with `drs` commands, therefore users don't have to know *Git* much. For more details see [Differences to *Git*](#differences-to-*Git*)
 
 ## Table of contents
 
@@ -212,7 +212,7 @@ If you don't have SSH keys, please follow the guide [How to Set Up SSH Keys](htt
 
 ### Metadata repository setup
 
-This section explains how to setup the **drs** metadata repository, it's nothing more than a normal Git repository.
+This section explains how to setup the **drs** metadata repository, it's nothing more than a normal *Git* repository.
 
 1. Create an empty *Git* repository (or use an existing one)
    ```bash
@@ -221,7 +221,7 @@ This section explains how to setup the **drs** metadata repository, it's nothing
    ```
 2. Copy the configuration template file from `$DRS_HOME/drs.json`
 3. Add your project directory ("name" property in `drs.json`) to your .gitignore file. It's `myproject` in the template
-4. Install **drs** *Git* aliases
+4. Install *Git* aliases
     ```bash
     . $DRS_HOME/install.sh
     ```
@@ -296,7 +296,7 @@ But nothing wrong with have `myapp/myapp` structure.
 
 ### Working directory explained
 
-The actual contents/files are not stored in the *drs* metadata repository, but there is a dedicated directory called the working directory (a working copy if you please). For convenience this is placed under a sub directory in drs repository and it's ignored by *Git*.
+The actual contents/files are not stored in the **drs** metadata repository, but there is a dedicated directory called the working directory (a working copy if you please). For convenience this is placed under a sub directory in **drs** repository and it's ignored by *Git*.
 
 Example structure
 ```bash
@@ -549,7 +549,7 @@ $DRS_HOME/put.sh --sequence $BUILD_ID my_build_dir
 
 ## Differences to Git
 
-Since `drs` is uses *Git* more like a database, therefore not all *Git* concepts apply. Especially collaboration is completely different in a `drs` metadata repository.
+Since **drs** is uses *Git* more like a database, therefore not all *Git* concepts apply. Especially collaboration is completely different in a **drs** metadata repository.
 
 :warning: In case you want to work with *native* *Git* commands, the following notes are important to understand
 
@@ -558,7 +558,7 @@ Since `drs` is uses *Git* more like a database, therefore not all *Git* concepts
     To keep the workflow simple and robust, origin has precedence. Commands will force you to be up-to-date with origin and `drs-put` will implicitly try to push the new revision. This ensures whatever happens users will be fall back to a public *last known* version. Origin is the single source of truth, which must less error prune in single producer, multiple consumer context.
 - **No merging**
 
-    Revisions are not stored in *Git*, they are simple directories somewhere. As you cannot merge a directory on a filesystem, you cannot merge in `drs` either.
+    Revisions are not stored in *Git*, they are simple directories somewhere. As you cannot merge a directory on a filesystem, you cannot merge in **drs** either.
 
 - **Commit message format**
 
@@ -568,14 +568,14 @@ Since `drs` is uses *Git* more like a database, therefore not all *Git* concepts
 
 ## Retention
 
-Deleting revisions is done by deleting directories on the remote host. `drs` will try to locate a revision, if not found, it's assumed to be deleted. This part of the normal
+Deleting revisions is done by deleting directories on the remote host. **drs** will try to locate a revision, if not found, it's assumed to be deleted. This part of the normal
 workflow and will not be treated as error. To implement a simple retention policy, you can setup a cron job or Jenkins job to delete directories older than 2 weeks for example.
 
 ## Development notes
 
 *Git* was a convenient choice to make something distributed and transactional. Directory metadata is published as a *Git* commit message in `json` format. :cold_sweat: ugh, you might say, and you are probably right. I abused the commit message, but in a good way, embracing the tremendous flexibility *Git* offers. I didn't use *Git* notes because I don't have anything to annotate, I just want to record something.
 
-So a typical *drs* commit message looks like this:
+So a typical **drs** commit message looks like this:
 
 ```json
 {"uuid":"c1ca82b1-7f34-4f4c-9a76-05e3297b2a23","seq":"1622824489"}
