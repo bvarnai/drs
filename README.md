@@ -151,7 +151,7 @@ than copy `usr/` to `C:\Program Files\Git` directory manually.
 #### Final *client* check
 There is a script `check-client-prerequisites.sh` to check if your installation is ready:
 ```bash
-$DRS_HOME/check-prerequisites.sh
+$DRS_HOME/check-client-prerequisites.sh
 ```
 It should print all OK.
 
