@@ -96,7 +96,7 @@ export DRS_HOME=~/drs
 sudo apt install openssh-client git rsync uuid-runtime jq
 ```
 
-#### Install *client* prerequisites on Git for Windows (Git-Bash/MinGW/MSYS2)
+#### Install *client* prerequisites on [Git for Windows](https://gitforwindows.org/) (Git-Bash/MinGW/MSYS2)
 
 Unfortunately `Git-Bash` doesn't have a default package manager, so installing additional tools is a manual process.
 
@@ -104,9 +104,9 @@ Unfortunately `Git-Bash` doesn't have a default package manager, so installing a
 
 Good news is that there are pre-compiled packages available, you just have download, extract the archives and add them to your existing `Git-Bash` installation.
 
-:warning: The next steps are platform specific. I assume you are on Windows x86_64 with `Git for Windows` 64 bit version
+:warning: The next steps are platform specific. I assume you are on Windows x86_64 and installed [Git for Windows](https://gitforwindows.org/) 64 bit version
 
-Tested with `Git for Windows` versions:
+Tested with [Git for Windows](https://gitforwindows.org/) versions:
 - 2.43.0
 - 2.41.0
 
