@@ -16,9 +16,9 @@ Networking is private to these containers. For demonstration purposes only.
     ```bash
     docker-compose run --rm drs-client
     ```
-3. Verifing the connection the client shell
+3. Verifying the connection the client shell (this will immediately close the connection as well)
     ```bash
-    ssh drs-server
+    ssh drs-server exit
     ```
 
 ## Use
@@ -46,7 +46,7 @@ Networking is private to these containers. For demonstration purposes only.
     git drs-select master
     git drs-get --latest
     ```
-    If you check the files in `myproject` directory, you will notice only `file1` is present. Directory `myproject` is syncronized with the last revision on this branch.
+    If you check the files in `myproject` directory, you will notice only `file1` is present. Directory `myproject` is synchronized with the last revision on this branch.
 
 ## Down
 
