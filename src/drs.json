@@ -2,8 +2,8 @@
     "name": "myproject",
     "defaultBranch": "master",
     "remote": {
-        "host": "rds",
-        "directory": "/var/storage/rds",
+        "host": "drs",
+        "directory": "/var/storage/drs",
         "rsyncOptions": {
             "get":"-az --delete-during --checksum",
             "put":"-az --delete-during --whole-file"
