@@ -15,6 +15,49 @@ declare -r DRS_INFO_HOOK_FILE='drs-info-hook.sh'
 declare DRS_START_TIME=0
 
 #######################################
+# Platform-agnostic uuidgen.
+# Globals:
+#   None
+# Arguments:
+#   None
+#######################################
+function drs::common::uuidgen()
+{
+  local uuid
+  case "$OSTYPE" in
+    # Git Bash, Cygwin, or MSYS on Windows
+    msys*|cygwin*|win32*)
+      powershell.exe -NoProfile -Command "[guid]::NewGuid().ToString().ToLower()" | tr -d '\r'
+      ;;
+    # Native Linux or WSL
+    linux-gnu*)
+      if [ -f /proc/sys/kernel/random/uuid ]; then
+        cat /proc/sys/kernel/random/uuid
+      else
+        # Fallback if proc is restricted
+        python3 -c 'import uuid; print(uuid.uuid4())'
+      fi
+      ;;
+    # macOS
+    darwin*)
+      /usr/bin/uuidgen | tr '[:upper:]' '[:lower:]'
+      ;;
+    *)
+      drs::common::err "Unsupported platform for uuidgen"
+      return 1
+      ;;
+  esac
+
+  # final check: ensure we actually got a string back
+  if [[ -n "$uuid" ]]; then
+    echo "$uuid"
+  else
+    drs::common::err "Error: Failed to generate UUID"
+    return 1
+  fi
+}
+
+#######################################
 # Read repository information and check if it's a git repository.
 # Globals:
 #   None
@@ -40,7 +83,7 @@ function drs::common::read_repository()
 #######################################
 # Sets start time.
 # Globals:
-#   DRS_START_TIME
+#  None
 # Arguments:
 #  None
 # Returns:
@@ -79,7 +122,7 @@ function drs::common::fetch_and_switch()
 #######################################
 # Sets start time.
 # Globals:
-#   DRS_START_TIME
+#  DRS_START_TIME
 # Arguments:
 #  None
 # Returns:
