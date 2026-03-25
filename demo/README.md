@@ -54,3 +54,17 @@ To stop all services use
 ```bash
 docker-compose down
 ```
+
+# How to build
+
+- Client
+```
+docker build -t balazsvarnai/drs-demo-client:latest -f Dockerfile.client .
+docker push balazsvarnai/drs-demo-client
+```
+
+- Server
+```
+docker build -t balazsvarnai/drs-demo-server:latest -f Dockerfile.server .
+docker push balazsvarnai/drs-demo-server
+```

@@ -1,9 +1,9 @@
 FROM ubuntu:latest
 
 # setup drs group/user
-ARG GID=1000
+ARG GID=1001
 ARG GROUP=drs
-ARG UID=1000
+ARG UID=1001
 ARG USER=drs
 
 # install tools

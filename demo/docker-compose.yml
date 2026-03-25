@@ -1,4 +1,3 @@
-version:             '3'
 services:
   drs-server:
     image:           balazsvarnai/drs-demo-server:latest
