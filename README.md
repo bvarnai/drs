@@ -1,16 +1,16 @@
 # drs - an uncomplicated directory revision storage
 
-**drs** is a small set of shell scripts that allows you to store directory revisions (snapshots if you like) remotely. Revision metadata is stored in a *Git* repository while the directory contents are stored on a remote host using *SSH* and *rsync*. Metadata repository can be kept small since it's completely independent of the directory contents.
+**drs** is a small set of shell scripts that allows you to store directory revisions (snapshots if you like) remotely. Revision metadata is stored in a *Git* repository while the directory contents are stored on a remote host using *SSH* and *rsync*. The metadata repository can be kept small since it's completely independent of the directory contents.
 
-It's really easy to setup, depends on only standard tools and easy to extend.
+It's really easy to set up, depends only on standard tools, and is easy to extend.
 
 **Where does it fit?**
 
-I needed to store large builds (>5GB) and distribute them efficiently to testers. The actual differences between builds were quite small, a few changed jars along with 100s of other jars that rarely changing. In such case, rsync does a spectacular jobs to speed things up. *Git* is great to keep track of everything else, branches, build information etc.
+I needed to store large builds (\>5GB) and distribute them efficiently to testers. The actual differences between builds were quite small, a few changed jars along with 100s of other jars that rarely change. In such cases, rsync does a spectacular job to speed things up. *Git* is great to keep track of everything else: branches, build information, etc.
 
 **Relation to Git**
 
-**drs** uses *Git* as a minimalistic database. Commands like `drs-put`, `drs-get` are integrated as *Git* aliases and organized around producer/customer concept. Producer is usually a build job on CI, the consumer can be a human tester or a regression test job for example. Most workflow tasks (except `git init, tag`) are covered with `drs` commands, therefore users don't have to know *Git* much. For more details see [Differences to *Git*](#differences-to-*Git*)
+**drs** uses *Git* as a minimalistic database. Commands like `drs-put` and `drs-get` are integrated as *Git* aliases and organized around a producer/customer concept. The producer is usually a build job on CI; the consumer can be a human tester or a regression test job, for example. Most workflow tasks (except `git init`, `git tag`) are covered with `drs` commands, therefore users don't have to know *Git* much. For more details see [Differences to *Git*](#differences-to-*Git*).
 
 ## Table of contents
 
@@ -53,7 +53,7 @@ I needed to store large builds (>5GB) and distribute them efficiently to testers
   - [Development notes](#development-notes)
     - [Shell vs. python, groovy etc.](#shell-vs-python-groovy-etc)
 
----
+-----
 
 ## Demo
 
@@ -61,75 +61,97 @@ I needed to store large builds (>5GB) and distribute them efficiently to testers
 
 :tada: For a complete dockerized example see [drs demo](demo)
 
-It's fully functional, you can play with `put` and `get` commands.
+It's fully functional; you can play with `put` and `get` commands.
 
----
+-----
 
 ## Installation
 
 ### Using sources
-  1. Clone this repository to a suitable directory on your computer
-  2. Add this directory plus `src` to the `DRS_HOME` environment variable
-  ```bash
-  export DRS_HOME=~/drs/src
-  ```
+
+1.  Clone this repository to a suitable directory on your computer
+2.  Add this directory plus `src` to the `DRS_HOME` environment variable
+
+<!-- end list -->
+
+```bash
+export DRS_HOME=~/drs/src
+```
 
 ### Using releases
-  1. Download `drs.tar.gz` from the [latest release](https://github.com/bvarnai/drs/releases/latest)
+
+1.  Download `drs.tar.gz` from the [latest release](https://github.com/bvarnai/drs/releases/latest)
+
+<!-- end list -->
+
 ```bash
 curl -o drs.tar.gz -L https://github.com/bvarnai/drs/releases/latest/download/drs.tar.gz
 ```
-  3. Extract archive (to a directory of your choosing)
+
+2.  Extract the archive (to a directory of your choosing)
+
+<!-- end list -->
+
 ```bash
 tar -zxvf drs.tar.gz
 ```
-  4. Add this directory to the `DRS_HOME` environment variable
+
+3.  Add this directory to the `DRS_HOME` environment variable
+
+<!-- end list -->
+
 ```bash
 export DRS_HOME=~/drs
- ```
+```
 
 :memo: You can set `DRS_HOME` in `~/.profile` or `~/.bashrc` to make it permanent
 
 ### Install prerequisites
-:memo: I omitted the trivial dependencies like git, ssh etc.
+
+:memo: I omitted trivial dependencies like git, ssh etc.
+
 #### Install *client* prerequisites on Ubuntu
+
 ```bash
 sudo apt install rsync jq
 ```
 
 #### Install *client* prerequisites on [Git for Windows](https://gitforwindows.org/) (Git-Bash/MinGW/MSYS2)
 
-Unfortunately `Git-Bash` doesn't have a default package manager, so installing additional utils is not trial.
+Unfortunately `Git-Bash` doesn't have a default package manager, so installing additional utils is not trivial.
 
-After trying out many approaches and tools, to my best knowledge the easist way it to use [scoop](https://scoop.sh/) in Windows.
+After trying out many approaches and tools, to my best knowledge the easiest way is to use [scoop](https://scoop.sh/) in Windows.
 
 ```bash
 scoop bucket add main
 scoop install main/cwrsync main/jq
 ```
 
-This should work regardless if you used *scoop* to install *git* or not.
+This should work regardless of whether you used *scoop* to install *git* or not.
 
 #### Final *client* check for the unbrave
+
 There is a script `check-client-prerequisites.sh` to check if your installation is ready:
+
 ```bash
-$DRS_HOME//check-client-prerequisites.sh
+$DRS_HOME/check-client-prerequisites.sh
 ```
+
 It should print all OK.
 
 #### Install *server* prerequisites
 
-You will need an SSH server, pick your own favorite. For basic setup instruction see [SSH server setup](#ssh-server-setup)
-or check out the demo server [Dockerfile](demo/server/Dockerfile)
+You will need an SSH server; pick your own favorite. For basic setup instructions see [SSH server setup](#ssh-server-setup) or check out the demo server [Dockerfile](demo/server/Dockerfile).
 
 :warning: No *rsync* daemon is needed, *SSH* only
 
 ## Configuration
 
 ### SSH configuration
+
 #### SSH client setup
 
-**drs** uses `ssh` to connect to the remote host. SSH configuration should be added to `~/.ssh/config` file. This must be done on every client.
+**drs** uses `ssh` to connect to the remote host. SSH configuration should be added to the `~/.ssh/config` file. This must be done on every client.
 
 ```bash
 Host <drs-host-name>
@@ -141,15 +163,17 @@ Host <drs-host-name>
     ForwardX11 no
     Ciphers ^aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,chacha20-poly1305@openssh.com,aes128-ctr
 ```
-- `<drs-host-name>`: a name that used to identify host. I recommend to use something simple like `drs-server`, this allows you to change the real host name without changing the configuration in the repository
-- `<drs-user-key>`: ssh private key
-- `<drs-real-host-name>`: the real host name, for example drs.mycompany.com
-- `<drs-user-name>`: ssh user name to login
-- `<drs-host-port>`: ssh port of the host
 
-:bulb: Cipher list is optional, based on post [Benchmark SSH Ciphers](https://gbe0.com/posts/linux/server/benchmark-ssh-ciphers/)
+  - `<drs-host-name>`: a name that is used to identify the host. I recommend using something simple like `drs-server`; this allows you to change the real host name without changing the configuration in the repository
+  - `<drs-user-key>`: ssh private key
+  - `<drs-real-host-name>`: the real host name, for example drs.mycompany.com
+  - `<drs-user-name>`: ssh user name to login
+  - `<drs-host-port>`: ssh port of the host
 
-An example configuration
+:bulb: Cipher list is optional, based on the post [Benchmark SSH Ciphers](https://gbe0.com/posts/linux/server/benchmark-ssh-ciphers/)
+
+An example configuration:
+
 ```
 Host drs-server
     HostName drs.mycompany.com
@@ -160,50 +184,51 @@ Host drs-server
     ForwardX11 no
     Ciphers ^aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,chacha20-poly1305@openssh.com,aes128-ctr
 ```
-:memo: Note SSH configuration is an extensive topic, endless options to choose from. You can find out more about option here [How to Use The SSH Config File](https://phoenixnap.com/kb/ssh-config)
 
-:bulb: If you are working in secure, trusted environment, for example a company intranet you can use a shared user for `drs`. It greatly simplifies client setup.
+:memo: Note SSH configuration is an extensive topic with endless options to choose from. You can find out more about options here: [How to Use The SSH Config File](https://phoenixnap.com/kb/ssh-config)
+
+:bulb: If you are working in a secure, trusted environment, for example a company intranet, you can use a shared user for `drs`. It greatly simplifies client setup.
 
 #### SSH server setup
 
-If you don't have an SSH server, please follow the guide [Initial Server Setup](https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-22-04)
+If you don't have an SSH server, please follow the guide [Initial Server Setup](https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-22-04).
 
 #### How to set up SSH keys
 
-If you don't have SSH keys, please follow the guide [How to Set Up SSH Keys](https://www.digitalocean.com/community/tutorials/how-to-set-up-ssh-keys-on-ubuntu-22-04)
+If you don't have SSH keys, please follow the guide [How to Set Up SSH Keys](https://www.digitalocean.com/community/tutorials/how-to-set-up-ssh-keys-on-ubuntu-22-04).
 
 ### Metadata repository setup
 
-This section explains how to setup the **drs** metadata repository, it's nothing more than a normal *Git* repository.
+This section explains how to set up the **drs** metadata repository; it's nothing more than a normal *Git* repository.
 
-1. Create an empty *Git* repository (or use an existing one)
-   ```bash
-   mkdir myrepo
-   git init
-   ```
-2. Copy the configuration template file from `$DRS_HOME/drs.json`
-3. Add your project directory ("name" property in `drs.json`) to your .gitignore file. It's `myproject` in the template
-4. Install *Git* aliases
+1.  Create an empty *Git* repository (or use an existing one):
+    ```bash
+    mkdir myrepo
+    git init
+    ```
+2.  Copy the configuration template file from `$DRS_HOME/drs.json`
+3.  Add your project directory ("name" property in `drs.json`) to your .gitignore file. It's `myproject` in the template
+4.  Install *Git* aliases:
     ```bash
     . $DRS_HOME/install.sh
     ```
-5. Add and commit configuration
+5.  Add and commit configuration:
     ```bash
     git add .
     git commit -m "Add initial drs configuration"
     ```
-6. Set remote
+6.  Set remote:
     ```bash
      git remote add origin git@myrepo.git
-     ```
-7. Push
+    ```
+7.  Push:
     ```bash
     git push -u origin master
     ```
 
 ### Configuration file
 
-The configuration file is called `drs.json` and it's located in the root of metadata repository.
+The configuration file is called `drs.json` and it's located in the root of the metadata repository.
 
 ```json
 {
@@ -219,24 +244,27 @@ The configuration file is called `drs.json` and it's located in the root of meta
     }
 }
 ```
-- `name` - project name, defines the project directory on remote as `$remote.directory/$name` and the working directory locally as `$name`
-- `defaultBranch` - commands will fall back to this default branch is nothing is specified
-  - `remote` configuration section for remote
-    - `host` - host name as specified in `~/.ssh/config` (see drs-host-name)
-    - `directory` - base directory on the remote
-    - `rsyncOptions` configuration section for rsync
-      - `get` - options passed to *rsync* for `get` command
-      - `put` - options passed to *rsync* for `put` command
 
-:warning: Property `directory` will expand on client side, using an absolute path is highly recommended
+  - `name` - project name, defines the project directory on remote as `$remote.directory/$name` and the working directory locally as `$name`
+  - `defaultBranch` - commands will fall back to this default branch if nothing is specified
+      - `remote` configuration section for remote:
+          - `host` - host name as specified in `~/.ssh/config` (see drs-host-name)
+          - `directory` - base directory on the remote
+          - `rsyncOptions` configuration section for rsync:
+              - `get` - options passed to *rsync* for `get` command
+              - `put` - options passed to *rsync* for `put` command
 
-For all available *rysnc* options see [rsync docs](https://download.samba.org/pub/rsync/rsync.html). The following *rsync* options added implicitly:
-- `-v` , `--info=progress2` and `--itemize-changes` if `-v|--verbose` is set
-- `--quiet` if `-q|--quiet` is set
+:warning: Property `directory` will expand on the client side; using an absolute path is highly recommended.
 
-:warning: These should not be added to `rsyncOptions` by default
+For all available *rsync* options see [rsync docs](https://download.samba.org/pub/rsync/rsync.html). The following *rsync* options are added implicitly:
 
-Example configuration
+  - `-v` , `--info=progress2` and `--itemize-changes` if `-v|--verbose` is set
+  - `--quiet` if `-q|--quiet` is set
+
+:warning: These should not be added to `rsyncOptions` by default.
+
+Example configuration:
+
 ```json
 {
     "name": "myproject",
@@ -251,37 +279,39 @@ Example configuration
     }
 }
 ```
-This will store data on `drs-server` in `/var/drs/myproject` directory.
 
-:memo: For my projects, the repository called `myapp-builds` and working directory called `myapp`, this will give `myapp-builds/myapp` local directory.
-But nothing wrong with have `myapp/myapp` structure.
+This will store data on `drs-server` in the `/var/drs/myproject` directory.
+
+:memo: For my projects, the repository is called `myapp-builds` and the working directory is called `myapp`; this will give a `myapp-builds/myapp` local directory. But there is nothing wrong with having a `myapp/myapp` structure.
 
 ### Working directory explained
 
-The actual contents/files are not stored in the **drs** metadata repository, but there is a dedicated directory called the working directory (a working copy if you please). For convenience this is placed under a sub directory in **drs** repository and it's ignored by *Git*.
+The actual contents/files are not stored in the **drs** metadata repository, but there is a dedicated directory called the working directory (a working copy if you please). For convenience, this is placed under a sub-directory in the **drs** repository and it's ignored by *Git*.
 
-Example structure
+Example structure:
+
 ```bash
 myrepo
   myproject
   .gitignore
   drs.json
 ```
-- `myproject` is your working directory
-- `.gitignore` contains `myproject` entry
-   ```bash
-   myproject
-   ```
 
-:warning: The working directory is ignored, it's not visible to *Git*. This means you won't see any change/diff in *Git* when changing the working directory contents
+  - `myproject` is your working directory
+  - `.gitignore` contains the `myproject` entry
+    ```bash
+    myproject
+    ```
 
-Otherwise there is no limitation on what you put in the metadata repository. For example you can store build information, logs, anything really. I like to think of it as where you keep your complete build history. It should be provide enough information to reproduce a specific build.
+:warning: The working directory is ignored; it's not visible to *Git*. This means you won't see any change/diff in *Git* when changing the working directory contents.
+
+Otherwise, there is no limitation on what you put in the metadata repository. For example, you can store build information, logs, anything really. I like to think of it as where you keep your complete build history. It should provide enough information to reproduce a specific build.
 
 ### Hooks
 
-Hooks are shell scripts to allow project specific extensions. They are committed to the metadata repository with a predefined name and function to implement.
+Hooks are shell scripts to allow project-specific extensions. They are committed to the metadata repository with a predefined name and function to implement.
 
-- `drs-info-hook.sh` is called by the `info` command. It can be used to print out user friendly information such links to Jenkins builds, source references etc.
+  - `drs-info-hook.sh` is called by the `info` command. It can be used to print out user-friendly information such as links to Jenkins builds, source references, etc.
     ```bash
     function info_hook()
     {
@@ -289,20 +319,21 @@ Hooks are shell scripts to allow project specific extensions. They are committed
         :
     }
     ```
-- `drs-put-hook.sh` is called by the `put` command before commit. It can be used to collect all necessary information about a revision (a build). Such can be used by `info` command for example
-     ```bash
+  - `drs-put-hook.sh` is called by the `put` command before commit. It can be used to collect all necessary information about a revision (a build). This can be used by the `info` command, for example.
+    ```bash
     function put_hook()
     {
-        # your hook implementation
-        :
+       # your hook implementation
+       :
     }
     ```
 
 #### Jenkins example
 
-Given you have a Jenkins job which is producing your builds. `drs-put-hook.sh` will dump `env` to a file `env.json`. Than it will committed and pushed to the metadata repository.
+Given you have a Jenkins job which is producing your builds. `drs-put-hook.sh` will dump `env` to a file `env.json`. Then it will be committed and pushed to the metadata repository.
 
-`drs-put-hook.sh`
+`drs-put-hook.sh`:
+
 ```bash
 function put_hook()
 {
@@ -310,9 +341,10 @@ function put_hook()
 }
 ```
 
-Clients consuming these builds will use `info` can get valuable information.
+Clients consuming these builds will use `info` and can get valuable information.
 
-`drs-info-hook.sh`
+`drs-info-hook.sh`:
+
 ```bash
 function info_hook()
 {
@@ -342,9 +374,9 @@ function info_hook()
 
 ### Putting your initial directory revision
 
-1. Make sure your pushed your configuration files `drs.json` and `.gitignore`
-2. Copy your initial content to the working directory
-3. Put your directory to remote
+1.  Make sure you pushed your configuration files `drs.json` and `.gitignore`
+2.  Copy your initial content to the working directory
+3.  Put your directory to remote:
     ```bash
     git drs-put
     ```
@@ -375,7 +407,7 @@ git drs-get
 
 ### Command reference
 
-Command syntax is the following:
+Command syntax is the following:
 
 ```bash
 git drs-<command> [options] [arguments]
@@ -383,43 +415,45 @@ git drs-<command> [options] [arguments]
 
 Optional elements are shown in brackets [ ]. For example, many commands take a branch name as an argument.
 
-To get some information about a command and a link to it's reference documentation use `command` with `help`:
+To get some information about a command and a link to its reference documentation, use `command` with `help`:
 
 ```bash
 git drs-<command> help
 ```
 
-:bulb: You can also use commands without *Git* alias, this is recommended for scripts. Refer to the command name
-when calling
+:bulb: You can also use commands without a *Git* alias; this is recommended for scripts. Refer to the command name when calling:
 
 ```bash
 $DRS_HOME/<command>.sh
 ```
 
----
+-----
+
 #### info
 
-The commit message is not very informative. To get more user friendly information use `info`:
+The commit message is not very informative. To get more user-friendly information, use `info`:
 
 ```bash
 git drs-info
 ```
 
-The `info` command implementation is project specific, see section [Hooks](#hooks)
+The `info` command implementation is project-specific; see section [Hooks](#hooks).
 
----
+-----
+
 #### name
 
-To get the current branch name use `name`:
+To get the current branch name, use `name`:
 
 ```bash
 git drs-name
 ```
 
----
+-----
+
 #### select
 
-To select and switch to an existing branch use `select`:
+To select and switch to an existing branch, use `select`:
 
 ```bash
 git drs-select [<branch>|<tag>|<uuid>]
@@ -427,25 +461,26 @@ git drs-select [<branch>|<tag>|<uuid>]
 
 Arguments:
 
-- `branch, tag` - the branch, tag to select, if not specified the `defaultBranch` property will be used (optional)
-- `uuid` - the uuid to select, alternatively this searches the log for a specific uuid (optional)
+  - `branch, tag` - the branch or tag to select; if not specified, the `defaultBranch` property will be used (optional)
+  - `uuid` - the uuid to select; alternatively, this searches the log for a specific uuid (optional)
 
-:memo: `uuid` based selection is useful is to identify builds for example, Jenkins can post the `uuid` for each build and users can use this directly
+:memo: `uuid` based selection is useful to identify builds; for example, Jenkins can post the `uuid` for each build and users can use this directly.
 
 ![jenkins uuid](docs/jenkins-uuid.png)
+-----
 
----
 #### update
 
-To get to the latest revision use `update`:
+To get to the latest revision, use `update`:
 
 ```bash
 git drs-update
 ```
 
-:memo: If you are in detached HEAD state (not on any branch), `update` will fail. You need to select a branch than update it
+:memo: If you are in a detached HEAD state (not on any branch), `update` will fail. You need to select a branch then update it.
 
----
+-----
+
 #### get
 
 To get the directory revision specified by the current commit. The working directory content will be synchronized with this revision.
@@ -456,25 +491,26 @@ git drs-get [-v,--verbose] [-q,--quiet] [--stats] [--latest] [<target_directory>
 
 Options:
 
-- `verbose` - sets *rsync* verbose mode (optional)
-- `quite` - sets *rsync* quiet mode (optional)
-- `stats` - enables *rsync* statistics (optional)
-- `latest` - combines `update` and `get` to get the latest version
+  - `verbose` - sets *rsync* verbose mode (optional)
+  - `quiet` - sets *rsync* quiet mode (optional)
+  - `stats` - enables *rsync* statistics (optional)
+  - `latest` - combines `update` and `get` to get the latest version
 
 Arguments:
 
-- `target_directory` – the directory to get content to, if not specified set the `name` property will be used (optional)
+  - `target_directory` – the directory to get content to; if not specified, the `name` property will be used (optional)
 
-:bulb: Usually you are only interested in the latest version, this can be done with a one-liner:
+:bulb: Usually you are only interested in the latest version; this can be done with a one-liner:
 
 ```bash
 git drs-get --latest
 ```
 
----
+-----
+
 #### create
 
-To create a new branch use `create`:
+To create a new branch, use `create`:
 
 ```bash
 git drs-create [<branch>]
@@ -482,12 +518,13 @@ git drs-create [<branch>]
 
 Arguments:
 
-- `branch` - the branch to create (mandatory)
+  - `branch` - the branch to create (mandatory)
 
----
+-----
+
 #### put
 
-To put revision to remote host use `put`:
+To put a revision to the remote host, use `put`:
 
 ```bash
 git drs-put [-v,--verbose] [--no-sequence-check] [-s,--sequence <sequence_number>] [<source_directory>]
@@ -495,17 +532,17 @@ git drs-put [-v,--verbose] [--no-sequence-check] [-s,--sequence <sequence_number
 
 Options:
 
-- `verbose` - sets *rsync* verbose mode (optional)
-- `quite` - sets *rsync* quiet mode (optional)
-- `stats` - enables *rsync* statistics (optional)
-- `no-sequence-check` - disables sequence number checking
-- `sequence_number` - the sequence number, must be a comparable decimal (optional)
+  - `verbose` - sets *rsync* verbose mode (optional)
+  - `quiet` - sets *rsync* quiet mode (optional)
+  - `stats` - enables *rsync* statistics (optional)
+  - `no-sequence-check` - disables sequence number checking
+  - `sequence_number` - the sequence number; must be a comparable decimal (optional)
 
 Arguments:
 
-- `source_directory` – the directory to put content from (optional)
+  - `source_directory` – the directory to put content from (optional)
 
-Simple Jenkins example for using `--sequence`
+Simple Jenkins example for using `--sequence`:
 
 ```bash
 $DRS_HOME/create.sh $BRANCH_NAME
@@ -513,37 +550,37 @@ $DRS_HOME/update.sh
 $DRS_HOME/put.sh --sequence $BUILD_ID my_build_dir
 ```
 
-:memo: `BRANCH_NAME` and `BUILD_ID` are Jenkins job variables
+:memo: `BRANCH_NAME` and `BUILD_ID` are Jenkins job variables.
 
-`source_directory` allows you to use a source directory eliminating the need to stage (copy) content to the working directory
+`source_directory` allows you to use a source directory, eliminating the need to stage (copy) content to the working directory.
 
 ## Differences to Git
 
-Since **drs** is uses *Git* more like a database, therefore not all *Git* concepts apply. Especially collaboration is completely different in a **drs** metadata repository.
+Since **drs** uses *Git* more like a database, not all *Git* concepts apply. Especially collaboration is completely different in a **drs** metadata repository.
 
-:warning: In case you want to work with *native* *Git* commands, the following notes are important to understand
+:warning: In case you want to work with *native* *Git* commands, the following notes are important to understand:
 
-- **Origin has precedence**
+  - **Origin has precedence**
 
-    To keep the workflow simple and robust, origin has precedence. Commands will force you to be up-to-date with origin and `drs-put` will implicitly try to push the new revision. This ensures whatever happens users will be fall back to a public *last known* version. Origin is the single source of truth, which must less error prune in single producer, multiple consumer context.
-- **No merging**
+    To keep the workflow simple and robust, origin has precedence. Commands will force you to be up-to-date with origin and `drs-put` will implicitly try to push the new revision. This ensures whatever happens, users will fall back to a public *last known* version. Origin is the single source of truth, which is much less error-prone in a single-producer, multiple-consumer context.
 
-    Revisions are not stored in *Git*, they are simple directories somewhere. As you cannot merge a directory on a filesystem, you cannot merge in **drs** either.
+  - **No merging**
 
-- **Commit message format**
+    Revisions are not stored in *Git*; they are simple directories somewhere. As you cannot merge a directory on a filesystem, you cannot merge in **drs** either.
 
-  Commit message has a strict format. You should not create them manually.
+  - **Commit message format**
 
-:memo: **No merging** implies that branches are not merged. They are created than deleted if not needed. It's possible to keep all branches if you want to keep all history.
+    The commit message has a strict format. You should not create them manually.
+
+:memo: **No merging** implies that branches are not merged. They are created then deleted if not needed. It's possible to keep all branches if you want to keep all history.
 
 ## Retention
 
-Deleting revisions is done by deleting directories on the remote host. **drs** will try to locate a revision, if not found, it's assumed to be deleted. This part of the normal
-workflow and will not be treated as error. To implement a simple retention policy, you can setup a cron job or Jenkins job to delete directories older than 2 weeks for example.
+Deleting revisions is done by deleting directories on the remote host. **drs** will try to locate a revision; if not found, it's assumed to be deleted. This is part of the normal workflow and will not be treated as an error. To implement a simple retention policy, you can set up a cron job or Jenkins job to delete directories older than 2 weeks, for example.
 
 ## Development notes
 
-*Git* was a convenient choice to make something distributed and transactional. Directory metadata is published as a *Git* commit message in `json` format. :cold_sweat: ugh, you might say, and you are probably right. I abused the commit message, but in a good way, embracing the tremendous flexibility *Git* offers. I didn't use *Git* notes because I don't have anything to annotate, I just want to record something.
+*Git* was a convenient choice to make something distributed and transactional. Directory metadata is published as a *Git* commit message in `json` format. :cold\_sweat: ugh, you might say, and you are probably right. I abused the commit message, but in a good way, embracing the tremendous flexibility *Git* offers. I didn't use *Git* notes because I don't have anything to annotate; I just want to record something.
 
 So a typical **drs** commit message looks like this:
 
@@ -553,10 +590,10 @@ So a typical **drs** commit message looks like this:
 
 The `uuid` is used to identify the directory on the remote host. The sequence number helps to drop outdated builds.
 
-*rsync* is a great tool when your have a small deltas to deal with. Initially I wanted to use a "trendy" S3 ([minIO](https://min.io/) for example) based solution, but I realized not much is gained there. I think for a small development team, these are just adding an unnecessary overhead.
+*rsync* is a great tool when you have small deltas to deal with. Initially, I wanted to use a "trendy" S3 ([minIO](https://min.io/) for example) based solution, but I realized not much is gained there. I think for a small development team, these just add unnecessary overhead.
 
 ### Shell vs. python, groovy etc.
 
-Obviously this is very subjective topic. I wanted to rely on external tools and keep it simple as possible. No advanced logic and the seamless integration with *Git* aliases pushed me in the direction to use shell only.
+Obviously, this is a very subjective topic. I wanted to rely on external tools and keep it as simple as possible. No advanced logic and the seamless integration with *Git* aliases pushed me in the direction to use shell only.
 
-I used Google's [Shell Style Guide](https://google.github.io/styleguide/shellguide.html) with the help of [ShellCheck](https://www.shellcheck.net/)
+I used Google's [Shell Style Guide](https://google.github.io/styleguide/shellguide.html) with the help of [ShellCheck](https://www.shellcheck.net/).
