@@ -42,5 +42,5 @@ RUN touch ~/.ssh/known_hosts && ssh-keyscan github.com >> ~/.ssh/known_hosts
 COPY --chown=${USER}:${GROUP} server/drs-demo.git.tar.gz drs-demo.git.tar.gz
 RUN tar -zxf drs-demo.git.tar.gz && rm drs-demo.git.tar.gz
 
-# rds home
+# drs home
 RUN mkdir -p ~/drs-home/myproject

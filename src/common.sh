@@ -157,7 +157,7 @@ function drs::common::precondition_detached()
 {
   if ! git symbolic-ref -q HEAD >/dev/null; then
     drs::common::err "Detached HEAD state detected, aborting"
-    drs::common::log "Hint: Select a branch first. Use \"git rds-select\" to select a branch"
+    drs::common::log "Hint: Select a branch first. Use \"git drs-select\" to select a branch"
     exit 1
   fi
 }
