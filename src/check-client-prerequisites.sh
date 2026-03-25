@@ -24,10 +24,3 @@ if ! jq --version; then
   exit 1
 fi
 drs::common::log "OK"
-
-drs::common::log "Checking 'uuidgen' command..."
-if ! uuidgen --version; then
-  drs::common::err "No 'uuidgen' command found"
-  exit 1
-fi
-drs::common::log "OK"

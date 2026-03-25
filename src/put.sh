@@ -111,7 +111,7 @@ function main()
   directory=$(jq -r '.remote.directory' "${DRS_CONFIG_FILE}")
   rsyncOptions=$(jq -r '.remote.rsyncOptions.put' "${DRS_CONFIG_FILE}")
 
-  uuid=$(uuidgen)
+  uuid=$(drs::common::uuidgen)
   drs::common::log "Directory revision uuid is '${uuid}'"
 
   # set default sequence if not specified
