@@ -1,12 +1,6 @@
 {
-    "name": "myproject",
-    "defaultBranch": "master",
     "remote": {
         "host": "drs",
-        "directory": "/var/storage/drs",
-        "rsyncOptions": {
-            "get":"-az --delete-during --checksum",
-            "put":"-az --delete-during --whole-file"
-        }
+        "path": "/volume1/storage/project"
     }
 }
