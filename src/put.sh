@@ -86,9 +86,9 @@ function main()
     fi
   fi
 
-  name=$(jq -r '.name' "${DRS_CONFIG_FILE}")
+  workDir=$(jq -r '.workDir // "data"' "${DRS_CONFIG_FILE}")
   if [[ -z "${source_directory}" ]]; then
-    source_directory="${name}"
+    source_directory="${workDir}"
   fi
 
   # check if source directory exists
@@ -109,7 +109,7 @@ function main()
 
   host=$(jq -r '.remote.host' "${DRS_CONFIG_FILE}")
   path=$(jq -r '.remote.path' "${DRS_CONFIG_FILE}")
-  rsyncOptions=$(jq -r '.remote.rsyncOptions.put' "${DRS_CONFIG_FILE}")
+  rsyncOptions=$(jq -r '.remote.rsyncOptions.put // ""' "${DRS_CONFIG_FILE}")
 
   uuid=$(drs::common::uuidgen)
   drs::common::log "Directory revision uuid is '${uuid}'"
@@ -132,10 +132,6 @@ function main()
     fi
   else
       drs::common::log 'Unable to use previous revision, doing a full copy'
-  fi
-
-  if [[ -z "${source_directory}" ]]; then
-    source_directory="${name}"
   fi
 
   # sync

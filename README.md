@@ -208,7 +208,7 @@ This section explains how to set up the **drs** metadata repository; it's nothin
     git init
     ```
 2.  Copy the configuration template file from `$DRS_HOME/drs.json`
-3.  Add your project directory ("name" property in `drs.json`) to your .gitignore file. It's `myproject` in the template
+3.  Add your project directory ("workDir" property in `drs.json`) to your .gitignore file. It's `data` by default.
 4.  Install *Git* aliases:
     ```bash
     . $DRS_HOME/install.sh
@@ -233,7 +233,7 @@ The configuration file is called `drs.json` and it's located in the root of the 
 
 ```json
 {
-    "name": "<project-name>",
+    "workDir": "<working-directory>",
     "defaultBranch": "<default-branch>",
     "remote": {
         "host": "<drs-host-name>",
@@ -246,16 +246,14 @@ The configuration file is called `drs.json` and it's located in the root of the 
 }
 ```
 
-  - `name` - project name, defines the project directory on remote as `$remote.directory/$name` and the working directory locally as `$name`
-  - `defaultBranch` - commands will fall back to this default branch if nothing is specified
+  - `workDir` - (optional) working directory, defaults to `data`
+  - `defaultBranch` - (optional) commands will fall back to this branch if nothing is specified, defaults to `main`
       - `remote` configuration section for remote:
           - `host` - host name as specified in `~/.ssh/config` (see drs-host-name)
           - `path` - path on the remote where revisions are stored
-          - `rsyncOptions` configuration section for rsync:
-              - `get` - options passed to *rsync* for `get` command
-              - `put` - options passed to *rsync* for `put` command
-
-:warning: Property `path` will expand on the client side; using an absolute path is highly recommended.
+          - `rsyncOptions` (optional) configuration options for rsync:
+              - `get` - (optional) passed to *rsync* for `get` command
+              - `put` - (optional) passed to *rsync* for `put` command
 
 For all available *rsync* options see [rsync docs](https://download.samba.org/pub/rsync/rsync.html). The following *rsync* options are added implicitly:
 
@@ -264,12 +262,21 @@ For all available *rsync* options see [rsync docs](https://download.samba.org/pu
 
 :warning: These should not be added to `rsyncOptions` by default.
 
+Example minimum configuration:
+
+```json
+{
+    "remote": {
+        "host": "drs-server",
+        "path": "/var/drs/myproject",
+    }
+}
+```
+
 Example configuration:
 
 ```json
 {
-    "name": "myproject",
-    "defaultBranch": "main",
     "remote": {
         "host": "drs-server",
         "path": "/var/drs/myproject",
@@ -283,7 +290,7 @@ Example configuration:
 
 This will store data on `drs-server` in the `/var/drs/myproject` directory.
 
-:memo: For my projects, the repository is called `myapp-builds` and the working directory is called `myapp`; this will give a `myapp-builds/myapp` local directory. But there is nothing wrong with having a `myapp/myapp` structure.
+:memo: For my projects, the repository is called `myapp-builds` and the working directory is called `myapp`; this will give a `myapp-builds/myapp` local path. But there is nothing wrong with having a `myapp/myapp` structure.
 
 ### Working directory explained
 
@@ -293,15 +300,15 @@ Example structure:
 
 ```bash
 myrepo
-  myproject
+  data
   .gitignore
   drs.json
 ```
 
-  - `myproject` is your working directory
-  - `.gitignore` contains the `myproject` entry
+  - `data` is your working directory
+  - `.gitignore` contains the `data` entry
     ```bash
-    myproject
+    data
     ```
 
 :warning: The working directory is ignored; it's not visible to *Git*. This means you won't see any change/diff in *Git* when changing the working directory contents.

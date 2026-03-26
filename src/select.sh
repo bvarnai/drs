@@ -44,7 +44,7 @@ function main()
   # check if branch name is specified, fallback to default
   local branch
   if [[ -z "$1" ]]; then
-    branch=$(jq -r '.defaultBranch' "${DRS_CONFIG_FILE}")
+    branch=$(jq -r '.defaultBranch // "main"' "${DRS_CONFIG_FILE}")
     drs::common::log "Selecting '${branch}' branch by default"
   else
     if [[ "$1" =~ $DRS_UUID_REGEXP ]]; then

@@ -100,17 +100,16 @@ function main()
 
   drs::common::log "Directory revision uuid is '${uuid}'"
 
-  name=$(jq -r '.name' "${DRS_CONFIG_FILE}")
+  workDir=$(jq -r '.workDir // "data"' "${DRS_CONFIG_FILE}")
   host=$(jq -r '.remote.host' "${DRS_CONFIG_FILE}")
-  directory=$(jq -r '.remote.directory' "${DRS_CONFIG_FILE}")
-  rsyncOptions=$(jq -r '.remote.rsyncOptions.get' "${DRS_CONFIG_FILE}")
+  path=$(jq -r '.remote.path' "${DRS_CONFIG_FILE}")
+  rsyncOptions=$(jq -r '.remote.rsyncOptions.get // ""' "${DRS_CONFIG_FILE}")
 
-  target_directory="${name}"
+  target_directory="${workDir}"
   # the 2nd positional argument is the local source directory (optional)
   if [[ -n "$1" ]]; then
     if [[ ! -d "$1" ]]; then
-      echo "$1"
-      if mkdir -p "$1"; then
+      if ! mkdir -p "$1"; then
         drs::common::err "Failed to create target directory '$1'"
         exit 1
       fi
@@ -121,7 +120,7 @@ function main()
   # locate revision
   drs::common::log "Checking revision on remote host"
   # shellcheck disable=SC2029
-  if ! ssh "${host}" "[ -d ${directory}/${name}/${uuid} ]"; then
+  if ! ssh "${host}" "[ -d ${path}/${uuid} ]"; then
     drs::common::err "Unable to find revision"
     drs::common::log "Hint: Revision might be gone already (that's normal depending on your retention policy)"
     exit 1
@@ -143,7 +142,7 @@ function main()
   fi
 
   # shellcheck disable=SC2089
-  if ! rsync $rsyncOptions -e 'ssh -T' "${host}:${directory}/${name}/${uuid}/" "${target_directory}/"; then
+  if ! rsync $rsyncOptions -e 'ssh -T' "${host}:${path}/${uuid}/" "${target_directory}/"; then
     drs::common::err "Unable to get directory revision"
     exit 1
   fi
