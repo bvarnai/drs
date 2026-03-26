@@ -123,7 +123,7 @@ function main()
   # copy previous build on remote host to speed up sync
   drs::common::log "Trying to use previous revision as baseline (this might take a while)"
   commit=$(git log --pretty=format:%s -1)
-  last_uuid=$(jq -r '.uuid' <<< "${commit}")
+  last_uuid=$(jq -r '.uuid' <<< "${commit}" 2>&-)
   if [[ "$last_uuid" =~ $DRS_UUID_REGEXP ]]; then
     if ssh -T "${host}" cp -R -a "${path}/${last_uuid}"  "${path}/${uuid}"; then
       drs::common::log "Baseline revision uuid is '${last_uuid}'"
@@ -208,8 +208,8 @@ function main()
     # check sequence (latest commit pointing to latest build)
     if [[ "${sequence_check}" == "true" ]]; then
       commit=$(git log --pretty=format:%s "origin/${branch}" -1)
-      last_sequence=$(jq -r '.seq' <<< "${commit}")
-      if (( sequence < last_sequence )); then
+      last_sequence=$(jq -r '.seq' <<< "${commit}" 2>&-)
+      if [[ "${last_sequence}" =~ ^[0-9]+$ ]] && (( sequence < last_sequence )); then
         drs::common::log "Newer revision found, dropping older (hard reset)"
         drs::common::log "Hint: This is usually ok, you want to see the latest revision"
 

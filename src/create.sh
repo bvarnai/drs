@@ -96,7 +96,7 @@ function main()
 
   # copy uuid of previous commit
   commit=$(git log --pretty=format:%s -1)
-  last_uuid=$(jq -r '.uuid' <<< "${commit}")
+  last_uuid=$(jq -r '.uuid' <<< "${commit}" 2>&-)
   if [[ ! "$last_uuid" =~ $DRS_UUID_REGEXP  ]]; then
     last_uuid="00000000-0000-0000-0000-000000000000"
   fi
