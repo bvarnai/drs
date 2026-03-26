@@ -139,6 +139,7 @@ function main()
 
   # implicit rsync flags and options
   implicitRsyncOptions=""
+
   # verbose options
   if [[ ${quiet} == 1 ]]; then
     implicitRsyncOptions+=" --quiet"
