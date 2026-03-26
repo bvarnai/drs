@@ -141,6 +141,9 @@ function main()
     rsyncOptions+=" --stats"
   fi
 
+  # force archive
+  rsyncOptions+=" -a"
+
   # shellcheck disable=SC2089
   if ! rsync $rsyncOptions -e 'ssh -T' "${host}:${path}/${uuid}/" "${target_directory}/"; then
     drs::common::err "Unable to get directory revision"
