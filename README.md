@@ -23,7 +23,7 @@ I needed to store large builds (\>5GB) and distribute them efficiently to tester
     - [Install prerequisites](#install-prerequisites)
       - [Install *client* prerequisites on Ubuntu](#install-client-prerequisites-on-ubuntu)
       - [Install *client* prerequisites on Git for Windows (Git-Bash/MinGW/MSYS2)](#install-client-prerequisites-on-git-for-windows-git-bashmingwmsys2)
-      - [Final *client* check](#final-client-check)
+      - [Final *client* check for the unbrave](#final-client-check-for-the-unbrave)
       - [Install *server* prerequisites](#install-server-prerequisites)
   - [Configuration](#configuration)
     - [SSH configuration](#ssh-configuration)
@@ -44,6 +44,7 @@ I needed to store large builds (\>5GB) and distribute them efficiently to tester
       - [info](#info)
       - [name](#name)
       - [select](#select)
+  - [](#)
       - [update](#update)
       - [get](#get)
       - [create](#create)
@@ -236,7 +237,7 @@ The configuration file is called `drs.json` and it's located in the root of the 
     "defaultBranch": "<default-branch>",
     "remote": {
         "host": "<drs-host-name>",
-        "directory": "<remote-directory>",
+        "path": "<remote-path>",
         "rsyncOptions": {
             "get":"<rsync-options>",
             "put":"<rsync-options>"
@@ -249,12 +250,12 @@ The configuration file is called `drs.json` and it's located in the root of the 
   - `defaultBranch` - commands will fall back to this default branch if nothing is specified
       - `remote` configuration section for remote:
           - `host` - host name as specified in `~/.ssh/config` (see drs-host-name)
-          - `directory` - base directory on the remote
+          - `path` - path on the remote where revisions are stored
           - `rsyncOptions` configuration section for rsync:
               - `get` - options passed to *rsync* for `get` command
               - `put` - options passed to *rsync* for `put` command
 
-:warning: Property `directory` will expand on the client side; using an absolute path is highly recommended.
+:warning: Property `path` will expand on the client side; using an absolute path is highly recommended.
 
 For all available *rsync* options see [rsync docs](https://download.samba.org/pub/rsync/rsync.html). The following *rsync* options are added implicitly:
 
@@ -271,7 +272,7 @@ Example configuration:
     "defaultBranch": "main",
     "remote": {
         "host": "drs-server",
-        "directory": "/var/drs",
+        "path": "/var/drs/myproject",
         "rsyncOptions": {
             "get":"-az --delete-during --stats",
             "put":"-az --delete-during --whole-file --stats"

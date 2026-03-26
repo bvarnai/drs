@@ -108,7 +108,7 @@ function main()
   fi
 
   host=$(jq -r '.remote.host' "${DRS_CONFIG_FILE}")
-  directory=$(jq -r '.remote.directory' "${DRS_CONFIG_FILE}")
+  path=$(jq -r '.remote.path' "${DRS_CONFIG_FILE}")
   rsyncOptions=$(jq -r '.remote.rsyncOptions.put' "${DRS_CONFIG_FILE}")
 
   uuid=$(drs::common::uuidgen)
@@ -125,7 +125,7 @@ function main()
   commit=$(git log --pretty=format:%s -1)
   last_uuid=$(jq -r '.uuid' <<< "${commit}")
   if [[ "$last_uuid" =~ $DRS_UUID_REGEXP ]]; then
-    if ssh -T "${host}" cp -R -a "${directory}/${name}/${last_uuid}"  "${directory}/${name}/${uuid}"; then
+    if ssh -T "${host}" cp -R -a "${path}/${last_uuid}"  "${path}/${uuid}"; then
       drs::common::log "Baseline revision uuid is '${last_uuid}'"
     else
       drs::common::log 'Unable to use previous revision, doing a full copy'
@@ -155,7 +155,7 @@ function main()
   fi
 
   # shellcheck disable=SC2089
-  if ! rsync $rsyncOptions -e 'ssh -T' "${source_directory}/" "${host}:${directory}/${name}/${uuid}/"; then
+  if ! rsync $rsyncOptions -e 'ssh -T' "${source_directory}/" "${host}:${path}/${uuid}/"; then
     drs::common::err "Unable to put directory revision"
     exit 1
   fi
