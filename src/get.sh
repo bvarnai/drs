@@ -92,7 +92,7 @@ function main()
   fi
 
   # check for empty marker (no revision put yet)
-  marker=$(jq -r '.marker' <<< "${commit}")
+  marker=$(jq -r '.marker' <<< "${commit}" 2>&-)
   if [[ "${marker}" == "true" ]]; then
     drs::common::log "No directory revision available yet on current branch"
     exit 1
