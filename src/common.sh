@@ -27,20 +27,20 @@ function drs::common::uuidgen()
   case "$OSTYPE" in
     # Git Bash, Cygwin, or MSYS on Windows
     msys*|cygwin*|win32*)
-      powershell.exe -NoProfile -Command "[guid]::NewGuid().ToString().ToLower()" | tr -d '\r'
+      uuid=$(powershell.exe -NoProfile -Command "[guid]::NewGuid().ToString().ToLower()" | tr -d '\r')
       ;;
     # Native Linux or WSL
     linux-gnu*)
       if [ -f /proc/sys/kernel/random/uuid ]; then
-        cat /proc/sys/kernel/random/uuid
+        uuid=$(cat /proc/sys/kernel/random/uuid)
       else
         # Fallback if proc is restricted
-        python3 -c 'import uuid; print(uuid.uuid4())'
+        uuid=$(python3 -c 'import uuid; print(uuid.uuid4())')
       fi
       ;;
     # macOS
     darwin*)
-      /usr/bin/uuidgen | tr '[:upper:]' '[:lower:]'
+      uuid=$(/usr/bin/uuidgen | tr '[:upper:]' '[:lower:]')
       ;;
     *)
       drs::common::err "Unsupported platform for uuidgen"
