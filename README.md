@@ -257,6 +257,7 @@ The configuration file is called `drs.json` and it's located in the root of the 
 
 For all available *rsync* options see [rsync docs](https://download.samba.org/pub/rsync/rsync.html). The following *rsync* options are added implicitly:
 
+  - `-a` archive, this is the gold standard, it includes recursion (-r) plus preserves permissions, symlinks, and timestamps
   - `-v` , `--info=progress2` and `--itemize-changes` if `-v|--verbose` is set
   - `--quiet` if `-q|--quiet` is set
 

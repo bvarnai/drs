@@ -150,6 +150,9 @@ function main()
     rsyncOptions+=" --stats"
   fi
 
+  # force archive
+  rsyncOptions+=" -a"
+
   # shellcheck disable=SC2089
   if ! rsync $rsyncOptions -e 'ssh -T' "${source_directory}/" "${host}:${path}/${uuid}/"; then
     drs::common::err "Unable to put directory revision"
