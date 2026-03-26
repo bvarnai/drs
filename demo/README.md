@@ -31,17 +31,17 @@ Networking is private to these containers. For demonstration purposes only.
     ```
 3. Create the first revision with some sample content and put it to `drs`
     ```bash
-    mkdir myproject
-    echo "Hello World" >> myproject/file1
+    mkdir data
+    echo "Hello World" >> data/file1
     git drs-put
     ```
 4. Create a second revision with some sample content on a branch and put it to `drs`
     ```bash
     git drs-create myfeature
-    echo "Hello World" >> myproject/file2
+    echo "Hello World" >> data/file2
     git drs-put
     ```
-5. Go back to  `master` branch and get the latest revision
+5. Go back to `master` branch and get the latest revision
     ```bash
     git drs-select master
     git drs-get --latest
