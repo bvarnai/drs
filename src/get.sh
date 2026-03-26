@@ -103,7 +103,6 @@ function main()
   workDir=$(jq -r '.workDir // "data"' "${DRS_CONFIG_FILE}")
   host=$(jq -r '.remote.host' "${DRS_CONFIG_FILE}")
   path=$(jq -r '.remote.path' "${DRS_CONFIG_FILE}")
-  rsyncOptions=$(jq -r '.remote.rsyncOptions.get // ""' "${DRS_CONFIG_FILE}")
 
   target_directory="${workDir}"
   # the 2nd positional argument is the local source directory (optional)
@@ -128,21 +127,30 @@ function main()
 
   drs::common::log "Getting directory revision from remote host (this might take a while)"
 
+  # implicit rsync flags and options
+  implicitRsyncOptions=""
+
   # verbose options
   if [[ ${quiet} == 1 ]]; then
-    rsyncOptions+=" --quiet"
+    implicitRsyncOptions+=" --quiet"
   else
-    rsyncOptions+=" --info=progress2"
-    rsyncOptions+=${verbose:+" -v" "${verbose}"}
+    implicitRsyncOptions+=" --info=progress2"
+    implicitRsyncOptions+=${verbose:+" -v" "${verbose}"}
   fi
 
   # statistics option
   if [[ ${stats} == 1 ]]; then
-    rsyncOptions+=" --stats"
+    implicitRsyncOptions+=" --stats"
   fi
 
-  # force archive
-  rsyncOptions+=" -a"
+  # force archive and delete
+  implicitRsyncOptions+=" -a --delete-during"
+
+  # user defined rsync flags and options
+  userRsyncOptions=$(jq -r '.remote.rsyncOptions.get // ""' "${DRS_CONFIG_FILE}")
+
+  # concat options so user defined evaluated last
+  rsyncOptions="$implicitRsyncOptions $userRsyncOptions"
 
   # shellcheck disable=SC2089
   if ! rsync $rsyncOptions -e 'ssh -T' "${host}:${path}/${uuid}/" "${target_directory}/"; then
