@@ -257,11 +257,12 @@ The configuration file is called `drs.json` and it's located in the root of the 
 
 For all available *rsync* options see [rsync docs](https://download.samba.org/pub/rsync/rsync.html). The following *rsync* options are added implicitly:
 
-  - `-a` archive, this is the gold standard, it includes recursion (-r) plus preserves permissions, symlinks, and timestamps
+  - `-a` archive is the gold standard, it includes recursion (-r) plus preserves permissions, symlinks, and timestamps
+  - `--delete-during` delete during is more memory-efficient because rsync doesn't have to build a giant list of "files to delete later"; it just deletes them as it encounters them in the directory scan
   - `-v` , `--info=progress2` and `--itemize-changes` if `-v|--verbose` is set
   - `--quiet` if `-q|--quiet` is set
 
-:warning: These should not be added to `rsyncOptions` by default.
+:warning: When you provide multiple flags that contradict each other or offer different "modes" of the same function, the last flag specified on the command line wins. So you can always "override" those implicit options with `rsyncOptions`.
 
 Example minimum configuration:
 

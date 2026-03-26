@@ -109,7 +109,7 @@ function main()
 
   host=$(jq -r '.remote.host' "${DRS_CONFIG_FILE}")
   path=$(jq -r '.remote.path' "${DRS_CONFIG_FILE}")
-  rsyncOptions=$(jq -r '.remote.rsyncOptions.put // ""' "${DRS_CONFIG_FILE}")
+
 
   uuid=$(drs::common::uuidgen)
   drs::common::log "Directory revision uuid is '${uuid}'"
@@ -137,21 +137,29 @@ function main()
   # sync
   drs::common::log "Putting directory revision to remote host (this might take a while)"
 
+  # implicit rsync flags and options
+  implicitRsyncOptions=""
   # verbose options
   if [[ ${quiet} == 1 ]]; then
-    rsyncOptions+=" --quiet"
+    implicitRsyncOptions+=" --quiet"
   else
-    rsyncOptions+=" --info=progress2"
-    rsyncOptions+=${verbose:+" -v" "${verbose}"}
+    implicitRsyncOptions+=" --info=progress2"
+    implicitRsyncOptions+=${verbose:+" -v" "${verbose}"}
   fi
 
   # statistics option
   if [[ ${stats} == 1 ]]; then
-    rsyncOptions+=" --stats"
+    implicitRsyncOptions+=" --stats"
   fi
 
   # force archive
-  rsyncOptions+=" -a"
+  implicitRsyncOptions+=" -a"
+
+  # user defined rsync flags and options
+  userRsyncOptions=$(jq -r '.remote.rsyncOptions.put // ""' "${DRS_CONFIG_FILE}")
+
+  # concat options so user defined evaluated last
+  rsyncOptions="$implicitRsyncOptions $userRsyncOptions"
 
   # shellcheck disable=SC2089
   if ! rsync $rsyncOptions -e 'ssh -T' "${source_directory}/" "${host}:${path}/${uuid}/"; then

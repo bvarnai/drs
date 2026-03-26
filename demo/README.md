@@ -59,7 +59,7 @@ docker-compose down
 
 - Client
 ```
-docker build -t balazsvarnai/drs-demo-client:latest -f Dockerfile.client .
+docker build --no-cache -t balazsvarnai/drs-demo-client:latest -f Dockerfile.client .
 docker push balazsvarnai/drs-demo-client
 ```
 
