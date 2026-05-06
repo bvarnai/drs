@@ -117,11 +117,11 @@ export DRS_HOME=~/drs
 sudo apt install rsync jq
 ```
 
-#### Install *client* prerequisites on [Git for Windows](https://gitforwindows.org/) (Git-Bash/MinGW/MSYS2)
+#### Install *client* prerequisites on [Git for Windows](https://gitforwindows.org/) (Git-Bash/MSYS2)
 
 Unfortunately `Git-Bash` doesn't have a default package manager, so installing additional utils is not trivial.
 
-After trying out many approaches and tools, to my best knowledge the easiest way is to use [scoop](https://scoop.sh/) in Windows.
+After trying out many approaches and tools, to my best knowledge the easiest way is to use [Scoop](https://scoop.sh/) in Windows.
 
 ```bash
 scoop bucket add main
