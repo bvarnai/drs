@@ -137,7 +137,7 @@ For **rsync**, you have two options:
     :warning: Note that `cwrsync` might have issues when used within `Git-Bash` from [Git for Windows](https://gitforwindows.org/).
 
 2.  **rsync-for-git-bash** (Recommended):
-    This is a custom build for a specific [Git for Windows](https://gitforwindows.org/) release to maximazie compatibility.
+    This is a custom build for a specific [Git for Windows](https://gitforwindows.org/) release to maximize compatibility.
     ```powershell
     scoop bucket add bvarnai-bucket https://github.com/bvarnai/scoop-bucket
     scoop install rsync-for-git-bash
