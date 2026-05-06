@@ -125,8 +125,23 @@ After trying out many approaches and tools, to my best knowledge the easiest way
 
 ```bash
 scoop bucket add main
-scoop install main/cwrsync main/jq
+scoop install main/jq
 ```
+
+For **rsync**, you have two options:
+
+1.  **cwRsync**:
+    ```powershell
+    scoop install main/cwrsync
+    ```
+    :warning: Note that `cwrsync` might have issues when used within `Git-Bash` from [Git for Windows](https://gitforwindows.org/).
+
+2.  **rsync-for-git-bash** (Recommended):
+    This is a custom build for a specific [Git for Windows](https://gitforwindows.org/) release to maximazie compatibility.
+    ```powershell
+    scoop bucket add bvarnai-bucket https://github.com/bvarnai/scoop-bucket
+    scoop install rsync-for-git-bash
+    ```
 
 This should work regardless of whether you used *scoop* to install *git* or not.
 
