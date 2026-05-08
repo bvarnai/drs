@@ -1,4 +1,4 @@
-# drs - an uncomplicated directory revision storage
+# drs - a minimalistic directory revision storage
 
 **drs** is a small set of shell scripts that allows you to store directory revisions (snapshots if you like) remotely. Revision metadata is stored in a *Git* repository while the directory contents are stored on a remote host using *SSH* and *rsync*. The metadata repository can be kept small since it's completely independent of the directory contents.
 
@@ -14,7 +14,7 @@ I needed to store large builds (\>5GB) and distribute them efficiently to tester
 
 ## Table of contents
 
-- [drs - an uncomplicated directory revision storage](#drs---an-uncomplicated-directory-revision-storage)
+- [drs - a minimalistic directory revision storage](#drs---a-minimalistic-directory-revision-storage)
   - [Table of contents](#table-of-contents)
   - [Demo](#demo)
   - [Installation](#installation)
