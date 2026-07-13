@@ -153,8 +153,8 @@ function main()
     implicitRsyncOptions+=" --stats"
   fi
 
-  # force archive
-  implicitRsyncOptions+=" -a"
+  # force archive and delete
+  implicitRsyncOptions+=" -a --delete-during"
 
   # user defined rsync flags and options
   userRsyncOptions=$(jq -r '.remote.rsyncOptions.put // ""' "${DRS_CONFIG_FILE}")
