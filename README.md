@@ -623,12 +623,23 @@ Options:
 * `-c`, `--commits <N>`: Number of latest commits per open branch to keep (default: 5).
 * `-h`, `--help`: Show the help message.
 
-### Cron Integration Example
-To schedule the cleanup script to run automatically every night at 2:00 AM, add a cron job on your server:
-```cron
-0 2 * * * /path/to/cleanup.sh --days 30 --commits 5 /path/to/repo.git /path/to/storage >> /var/log/drs-cleanup.log 2>&1
+### Cron Integration & Remote Repositories (e.g., GitHub)
+
+If your metadata repository is hosted on a remote platform like GitHub, your cleanup server needs to sync the latest branch, tag, and commit metadata before running the cleanup.
+
+#### 1. Initial Setup
+Create a **bare clone** of your GitHub repository on the storage server under the `drs` user:
+```bash
+git clone --bare git@github.com:username/your-drs-metadata-repo.git /home/drs/drs-metadata.git
 ```
-Make sure the user running the cron job has read/write permissions to both the Git repository and the storage directory.
+
+#### 2. Automating with Cron
+Add a cron job that fetches the latest updates from GitHub (pruning deleted branches and updating tags) and then runs the cleanup script:
+```cron
+0 2 * * * git --git-dir=/home/drs/drs-metadata.git fetch origin --prune --tags && /home/drs/cleanup.sh --days 30 --commits 5 /home/drs/drs-metadata.git /home/drs/drs-home/myproject >> /home/drs/drs-cleanup.log 2>&1
+```
+
+* **Note**: Make sure that the SSH keys for the `drs` user on the storage server are configured with read access to the GitHub repository so `git fetch` can run non-interactively without prompting for credentials.
 
 ## Development notes
 

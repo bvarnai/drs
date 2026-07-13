@@ -14,10 +14,10 @@
 # Integration with Cron:
 # You can run this script via cron to automate cleanup.
 #
-# Example cron configuration (runs every night at 2:00 AM):
-# 0 2 * * * /path/to/cleanup.sh --days 30 --commits 5 /path/to/repo.git /path/to/storage >> /var/log/drs-cleanup.log 2>&1
+# Example cron configuration for remote repositories (e.g. GitHub):
+# 0 2 * * * git --git-dir=/home/drs/drs-metadata.git fetch origin --prune --tags && /home/drs/cleanup.sh --days 30 --commits 5 /home/drs/drs-metadata.git /home/drs/drs-home/myproject >> /home/drs/drs-cleanup.log 2>&1
 #
-# Note: Ensure the user running the cron job has read/write permissions to both the git repository and the storage directory.
+# Note: Ensure the user running the cron job has read/write permissions to both the git repository and the storage directory, and has SSH key access to the remote repository.
 
 set -euo pipefail
 
@@ -35,9 +35,11 @@ Options:
   -c, --commits <N>  Number of latest commits per open branch to keep (default: 5).
   -h, --help         Show this help message.
 
-Integration with Cron:
-  Add a cron job to run this script periodically. Example:
-    0 2 * * * /path/to/cleanup.sh --days 30 --commits 5 /path/to/repo.git /path/to/storage
+Integration with Cron (e.g. for GitHub hosted metadata):
+  1. Clone your repo as a bare clone on the storage server:
+     git clone --bare git@github.com:username/repo.git /home/drs/drs-metadata.git
+  2. Setup a cron job to fetch updates and run cleanup:
+     0 2 * * * git --git-dir=/home/drs/drs-metadata.git fetch origin --prune --tags && /home/drs/cleanup.sh /home/drs/drs-metadata.git /home/drs/drs-home/myproject
 EOF
 }
 
