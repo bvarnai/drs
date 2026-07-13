@@ -601,7 +601,34 @@ Since **drs** uses *Git* more like a database, not all *Git* concepts apply. Esp
 
 ## Retention
 
-Deleting revisions is done by deleting directories on the remote host. **drs** will try to locate a revision; if not found, it's assumed to be deleted. This is part of the normal workflow and will not be treated as an error. To implement a simple retention policy, you can set up a cron job or Jenkins job to delete directories older than 2 weeks, for example.
+Deleting revisions is done by deleting directories on the remote host. **drs** will try to locate a revision; if not found, it's assumed to be deleted. This is part of the normal workflow and will not be treated as an error.
+
+To automate storage management, a server-side cleanup utility is provided in [src/cleanup.sh](file:///home/bvarnai/work/drs/src/cleanup.sh). It parses the metadata repository (the Git repo) as the source of truth to determine which revision directories are obsolete and can be deleted.
+
+### Cleanup Rules
+The script operates on the following rules:
+1. **Open Branches**: Retains the last $N$ commits (default: 5) and any commit not older than $M$ days (default: 30) for all active local branches (`refs/heads/*`).
+2. **Deleted Branches**: If a branch is deleted, its related revision artifacts are automatically purged unless kept by another active branch or tag.
+3. **Tags**: Never deletes revision artifacts associated with any Git tag.
+
+### Usage
+Run the cleanup script directly on the remote server:
+```bash
+./cleanup.sh [options] <git-dir> <storage-dir>
+```
+
+Options:
+* `-n`, `--dry-run`: Show what would be deleted without making any changes.
+* `-d`, `--days <N>`: Number of days of commits to keep on open branches (default: 30).
+* `-c`, `--commits <N>`: Number of latest commits per open branch to keep (default: 5).
+* `-h`, `--help`: Show the help message.
+
+### Cron Integration Example
+To schedule the cleanup script to run automatically every night at 2:00 AM, add a cron job on your server:
+```cron
+0 2 * * * /path/to/cleanup.sh --days 30 --commits 5 /path/to/repo.git /path/to/storage >> /var/log/drs-cleanup.log 2>&1
+```
+Make sure the user running the cron job has read/write permissions to both the Git repository and the storage directory.
 
 ## Development notes
 
