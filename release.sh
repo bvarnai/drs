@@ -5,7 +5,7 @@ mkdir -p build/drs build/release
 pushd build
 
 # start from scratch
-rm -r drs/ release/
+rm -rf drs/ release/
 mkdir drs/ release/
 
 # stage sources
