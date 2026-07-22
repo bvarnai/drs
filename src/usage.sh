@@ -85,46 +85,42 @@ function main()
 
   drs::common::log "Connecting to remote host '${host}' to retrieve storage usage..."
 
-  # Construct the remote command
-  local remote_command
-  remote_command=$(cat <<EOF
-path="${path}"
-if [ ! -d "\$path" ]; then
-  echo "ERROR:Remote path '\$path' does not exist."
+  local ssh_output
+  local ssh_exit_code
+
+  ssh_output=$(ssh -T "${host}" "/bin/sh -s -- \"${path}\"" 2>&1 <<'EOF'
+path="$1"
+if [ ! -d "$path" ]; then
+  echo "ERROR:Remote path '$path' does not exist."
   exit 1
 fi
 
-total_size=\$(du -sh "\$path" 2>/dev/null | cut -f1)
-echo "TOTAL_SIZE:\$total_size"
+total_size=$(du -sh "$path" 2>/dev/null | cut -f1)
+echo "TOTAL_SIZE:$total_size"
 
-df_info=\$(df -h "\$path" 2>/dev/null | tail -n 1)
-if [ -n "\$df_info" ]; then
-  disk_info=\$(echo "\$df_info" | awk '{print \$(NF-4) "," \$(NF-3) "," \$(NF-2) "," \$(NF-1)}')
-  echo "DISK_INFO:\$disk_info"
+df_info=$(df -h "$path" 2>/dev/null | tail -n 1)
+if [ -n "$df_info" ]; then
+  disk_info=$(echo "$df_info" | awk '{if (NF >= 5) print $(NF-4) "," $(NF-3) "," $(NF-2) "," $(NF-1)}')
+  echo "DISK_INFO:$disk_info"
 fi
 
-for d in "\$path"/*; do
-  if [ -d "\$d" ]; then
-    name=\$(basename "\$d")
-    if echo "\$name" | grep -qE '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\$' ; then
-      size=\$(du -sh "\$d" 2>/dev/null | cut -f1)
+for d in "$path"/*; do
+  if [ -d "$d" ]; then
+    name=$(basename "$d")
+    if echo "$name" | grep -qE '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'; then
+      size=$(du -sh "$d" 2>/dev/null | cut -f1)
       mtime=0
-      if stat -c %Y "\$d" >/dev/null 2>&1; then
-        mtime=\$(stat -c %Y "\$d")
-      elif stat -f %m "\$d" >/dev/null 2>&1; then
-        mtime=\$(stat -f %m "\$d")
+      if stat -c %Y "$d" >/dev/null 2>&1; then
+        mtime=$(stat -c %Y "$d")
+      elif stat -f %m "$d" >/dev/null 2>&1; then
+        mtime=$(stat -f %m "$d")
       fi
-      echo "REV:\$name:\$size:\$mtime"
+      echo "REV:$name:$size:$mtime"
     fi
   fi
 done
 EOF
 )
-
-  local ssh_output
-  local ssh_exit_code
-
-  ssh_output=$(ssh -T "${host}" "${remote_command}" 2>&1)
   ssh_exit_code=$?
 
   if [[ $ssh_exit_code -ne 0 ]]; then
