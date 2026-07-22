@@ -36,8 +36,6 @@ function main()
   drs::common::check_remote_refs
 
   # process arguments
-  local show_active=1
-  local show_orphaned=1
   local verbose=0
   local params=""
   while (( "$#" )); do
@@ -45,16 +43,6 @@ function main()
     case "$1" in
       help) # print usage
         help
-        ;;
-      -a|--active)
-        show_active=1
-        show_orphaned=0
-        shift
-        ;;
-      -o|--orphaned)
-        show_active=0
-        show_orphaned=1
-        shift
         ;;
       -v|--verbose)
         verbose=1
@@ -257,38 +245,35 @@ EOF
       hash="[orphaned]"
     fi
 
-    # Filter
-    if [[ $show_active -eq 1 && $is_active -eq 1 ]] || [[ $show_orphaned -eq 1 && $is_active -eq 0 ]]; then
-      if [[ $printed_header -eq 0 ]]; then
-        echo "Revisions breakdown:"
-        printf "%-36s  %8s  %-19s  %-10s  %-20s  %s\n" "UUID" "Size" "Created" "Commit" "Branch/Tag" "Message"
-        printf "%-36s  %8s  %-19s  %-10s  %-20s  %s\n" "------------------------------------" "--------" "-------------------" "----------" "--------------------" "----------------------"
-        printed_header=1
-      fi
-
-      local created_date
-      created_date=$(format_epoch "$mtime")
-      local ref_info="${uuid_to_refs["$uuid"]:-}"
-      if [[ -z "$ref_info" && $is_active -eq 1 ]]; then
-        ref_info="-"
-      elif [[ $is_active -eq 0 ]]; then
-        ref_info="-"
-      fi
-
-      local msg_info="${uuid_to_msg["$uuid"]:-}"
-      if [[ $is_active -eq 0 ]]; then
-        msg_info="-"
-      else
-        # Try to parse seq from JSON message
-        local seq
-        seq=$(jq -r '.seq // empty' <<< "${msg_info}" 2>/dev/null || true)
-        if [[ -n "$seq" ]]; then
-          msg_info="seq: ${seq}"
-        fi
-      fi
-
-      printf "%-36s  %8s  %-19s  %-10s  %-20s  %s\n" "${uuid}" "${size}" "${created_date}" "${hash}" "${ref_info}" "${msg_info}"
+    if [[ $printed_header -eq 0 ]]; then
+      echo "Revisions breakdown:"
+      printf "%-36s  %8s  %-19s  %-10s  %-20s  %s\n" "UUID" "Size" "Created" "Commit" "Branch/Tag" "Message"
+      printf "%-36s  %8s  %-19s  %-10s  %-20s  %s\n" "------------------------------------" "--------" "-------------------" "----------" "--------------------" "----------------------"
+      printed_header=1
     fi
+
+    local created_date
+    created_date=$(format_epoch "$mtime")
+    local ref_info="${uuid_to_refs["$uuid"]:-}"
+    if [[ -z "$ref_info" && $is_active -eq 1 ]]; then
+      ref_info="-"
+    elif [[ $is_active -eq 0 ]]; then
+      ref_info="-"
+    fi
+
+    local msg_info="${uuid_to_msg["$uuid"]:-}"
+    if [[ $is_active -eq 0 ]]; then
+      msg_info="-"
+    else
+      # Try to parse seq from JSON message
+      local seq
+      seq=$(jq -r '.seq // empty' <<< "${msg_info}" 2>/dev/null || true)
+      if [[ -n "$seq" ]]; then
+        msg_info="seq: ${seq}"
+      fi
+    fi
+
+    printf "%-36s  %8s  %-19s  %-10s  %-20s  %s\n" "${uuid}" "${size}" "${created_date}" "${hash}" "${ref_info}" "${msg_info}"
   done
 }
 

@@ -500,14 +500,12 @@ Arguments:
 To show remote storage consumption, use `usage`:
 
 ```bash
-git drs-usage [-v,--verbose] [-a,--active] [-o,--orphaned]
+git drs-usage [-v,--verbose]
 ```
 
 Options:
 
   - `verbose` - show the detailed breakdown table of all remote revision directories (optional)
-  - `active` - filter breakdown to show only active revisions (those found in the git repository) (optional)
-  - `orphaned` - filter breakdown to show only orphaned revisions (those not found in the git repository) (optional)
 
 It connects to the remote host via SSH and queries the total storage size of the configured remote path and retrieves details about remote disk space availability. If `--verbose` is provided, it also lists all directory revisions (UUIDs) along with their sizes, creation dates, git commit hashes, branches/tags, and sequence messages.
 
