@@ -98,11 +98,6 @@ fi
 total_size=$(du -sh "$path" 2>/dev/null | cut -f1)
 echo "TOTAL_SIZE:$total_size"
 
-df_info=$(df -h "$path" 2>/dev/null | tail -n 1)
-if [ -n "$df_info" ]; then
-  disk_info=$(echo "$df_info" | awk '{if (NF >= 5) print $(NF-4) "," $(NF-3) "," $(NF-2) "," $(NF-1)}')
-  echo "DISK_INFO:$disk_info"
-fi
 
 for d in "$path"/*; do
   if [ -d "$d" ]; then
@@ -130,10 +125,6 @@ EOF
   fi
 
   local total_size="-"
-  local disk_size="-"
-  local disk_used="-"
-  local disk_avail="-"
-  local disk_percent="-"
 
   # Arrays to hold remote revisions info
   local -a remote_uuids=()
@@ -148,8 +139,6 @@ EOF
       exit 1
     elif [[ "$line" =~ ^TOTAL_SIZE:(.*) ]]; then
       total_size="${BASH_REMATCH[1]}"
-    elif [[ "$line" =~ ^DISK_INFO:(.*) ]]; then
-      IFS=',' read -r disk_size disk_used disk_avail disk_percent <<< "${BASH_REMATCH[1]}"
     elif [[ "$line" =~ ^REV:([^:]+):([^:]+):([^:]+)$ ]]; then
       remote_uuids+=("${BASH_REMATCH[1]}")
       remote_sizes+=("${BASH_REMATCH[2]}")
@@ -162,9 +151,6 @@ EOF
   echo ""
   echo "Summary:"
   echo "  Total space used:  ${total_size}"
-  if [[ "${disk_size}" != "-" ]]; then
-    echo "  Remote disk:       ${disk_size} total, ${disk_used} used, ${disk_avail} available (${disk_percent} used)"
-  fi
   echo ""
 
   if [[ ${#remote_uuids[@]} -eq 0 ]]; then
