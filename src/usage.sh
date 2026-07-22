@@ -72,6 +72,7 @@ function main()
   local path
   host=$(jq -r '.remote.host' "${DRS_CONFIG_FILE}")
   path=$(jq -r '.remote.path' "${DRS_CONFIG_FILE}")
+  path="${path%/}"
 
   if [[ -z "${host}" || "${host}" == "null" ]]; then
     drs::common::err "Remote host is not configured in ${DRS_CONFIG_FILE}"

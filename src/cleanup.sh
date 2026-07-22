@@ -93,7 +93,7 @@ main() {
   fi
 
   local git_dir="$1"
-  local storage_dir="$2"
+  local storage_dir="${2%/}"
 
   if [[ ! -d "${git_dir}" ]]; then
     echo "Error: Git directory '${git_dir}' does not exist or is not a directory." >&2
@@ -148,7 +148,7 @@ main() {
 
   # Rule 1: For each open branch, keep the last N commits and all commits within last M days
   echo "Collecting active branch commits (last ${commits} commits and last ${days} days)..."
-  branches=$(git --git-dir="${git_dir}" for-each-ref --format='%(refname)' refs/heads/ 2>/dev/null || true)
+  branches=$(git --git-dir="${git_dir}" for-each-ref --format='%(refname)' refs/heads/ refs/remotes/ 2>/dev/null || true)
 
   for ref in $branches; do
     # Last N commits
