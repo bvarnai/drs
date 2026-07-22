@@ -44,6 +44,7 @@ I needed to store large builds (\>5GB) and distribute them efficiently to tester
       - [info](#info)
       - [name](#name)
       - [select](#select)
+      - [usage](#usage)
   - [](#)
       - [update](#update)
       - [get](#get)
@@ -492,6 +493,25 @@ Arguments:
 :memo: `uuid` based selection is useful to identify builds; for example, Jenkins can post the `uuid` for each build and users can use this directly.
 
 ![jenkins uuid](docs/jenkins-uuid.png)
+-----
+
+#### usage
+
+To show remote storage consumption, use `usage`:
+
+```bash
+git drs-usage [-v,--verbose]
+```
+
+Options:
+
+  - `verbose` - show the detailed breakdown table of all remote revision directories (optional)
+
+It connects to the remote host via SSH and queries the total storage size of the configured remote path and retrieves details about remote disk space availability. If `--verbose` is provided, it also lists all directory revisions (UUIDs) along with their sizes, creation dates, git commit hashes, branches/tags, and sequence messages.
+
+:warning: **Note on Active vs. Orphaned accuracy:**
+Classification of a remote revision as active or orphaned depends entirely on the state of your local Git repository history. If your local clone is stale (e.g. requires `git fetch`), shallow (e.g. `git clone --depth 1`), or missing branches (e.g. `--single-branch`), some active commits will not be visible locally. Consequently, active remote revisions might be reported as `[orphaned]`. Ensure your local clone is up-to-date and complete for accurate reporting.
+
 -----
 
 #### update

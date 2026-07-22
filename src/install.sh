@@ -30,6 +30,7 @@ git config --unset alias.drs-create
 git config --unset alias.drs-help
 git config --unset alias.drs-info
 git config --unset alias.drs-name
+git config --unset alias.drs-usage
 
 # Install commands (don't forget to update config-example)
 log "Adding drs-get"
@@ -46,4 +47,6 @@ log "Adding drs-info"
 git config --add alias.drs-info "!f() { ( \$DRS_HOME/info.sh \$@ ); }; f"
 log "Adding drs-name"
 git config --add alias.drs-name "!f() { ( \$DRS_HOME/name.sh \$@ ); }; f"
+log "Adding drs-usage"
+git config --add alias.drs-usage "!f() { ( \$DRS_HOME/usage.sh \$@ ); }; f"
 
