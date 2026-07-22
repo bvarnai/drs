@@ -507,7 +507,7 @@ Options:
 
   - `verbose` - show the detailed breakdown table of all remote revision directories (optional)
 
-It connects to the remote host via SSH and queries the total storage size of the configured remote path and retrieves details about remote disk space availability. If `--verbose` is provided, it also lists all directory revisions (UUIDs) along with their sizes, creation dates, git commit hashes, branches/tags, and sequence messages.
+It connects to the remote host via SSH and queries the total storage size of the configured remote path. If `--verbose` is provided, it also lists all directory revisions (UUIDs) along with their sizes, creation dates, git commit hashes, branches/tags, and sequence messages.
 
 :warning: **Note on Active vs. Orphaned accuracy:**
 Classification of a remote revision as active or orphaned depends entirely on the state of your local Git repository history. If your local clone is stale (e.g. requires `git fetch`), shallow (e.g. `git clone --depth 1`), or missing branches (e.g. `--single-branch`), some active commits will not be visible locally. Consequently, active remote revisions might be reported as `[orphaned]`. Ensure your local clone is up-to-date and complete for accurate reporting.
