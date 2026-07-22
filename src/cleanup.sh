@@ -112,6 +112,12 @@ main() {
 
   echo "Scanning git repository history to resolve commit UUIDs..."
 
+  # Check if FETCH_HEAD exists and is a valid ref
+  local fetch_head_log=""
+  if git --git-dir="${git_dir}" rev-parse --verify FETCH_HEAD >/dev/null 2>&1; then
+    fetch_head_log="FETCH_HEAD"
+  fi
+
   declare -A commit_to_uuid
   local line commit_hash msg uuid
   # Read git log output line-by-line
@@ -134,7 +140,7 @@ main() {
     if [[ -n "$uuid" ]]; then
       commit_to_uuid["$commit_hash"]="$uuid"
     fi
-  done < <(git --git-dir="${git_dir}" log --all --format="%H %s" 2>/dev/null || true)
+  done < <(git --git-dir="${git_dir}" log --all ${fetch_head_log} --format="%H %s" 2>/dev/null || true)
 
   declare -A keep_commits
   local commit ref branches
@@ -146,11 +152,17 @@ main() {
     keep_commits["$commit"]=1
   done
 
-  # Rule 1: For each open branch, keep the last N commits and all commits within last M days
+  # Check if FETCH_HEAD exists and is a valid ref
+  local fetch_head_ref=""
+  if git --git-dir="${git_dir}" rev-parse --verify FETCH_HEAD >/dev/null 2>&1; then
+    fetch_head_ref="FETCH_HEAD"
+  fi
+
+  # Rule 1: For each open branch (and FETCH_HEAD if present), keep the last N commits and all commits within last M days
   echo "Collecting active branch commits (last ${commits} commits and last ${days} days)..."
   branches=$(git --git-dir="${git_dir}" for-each-ref --format='%(refname)' refs/heads/ refs/remotes/ 2>/dev/null || true)
 
-  for ref in $branches; do
+  for ref in $branches $fetch_head_ref; do
     # Last N commits
     # shellcheck disable=SC2046
     for commit in $(git --git-dir="${git_dir}" rev-list -n "${commits}" "$ref" 2>/dev/null || true); do
